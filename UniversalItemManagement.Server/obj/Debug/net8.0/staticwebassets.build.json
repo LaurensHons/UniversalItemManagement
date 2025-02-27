@@ -1,15 +1,15 @@
 {
   "Version": 1,
-  "Hash": "AMWNUccoBOJnUJbJecjPmQ6ws4FtNfnEYFpHahL780I=",
+  "Hash": "BM9eluVRCvSkdtuKWQ/XYa9T9LEZpvMDNxpXC0qFPmw=",
   "Source": "UniversalItemManagement.Server",
   "BasePath": "_content/UniversalItemManagement.Server",
   "Mode": "Default",
   "ManifestType": "Build",
   "ReferencedProjectsConfiguration": [
     {
-      "Identity": "E:\\Projects\\UniversalItemManagement\\universalitemmanagement.client\\universalitemmanagement.client.esproj",
+      "Identity": "E:\\Projects\\UniversalItemManagement\\universalitemmanagement.client\\Universalitemmanagement.client.esproj",
       "Version": 2,
-      "Source": "universalitemmanagement.client",
+      "Source": "Universalitemmanagement.client",
       "GetPublishAssetsTargets": "GetCurrentProjectPublishStaticWebAssetItems",
       "AdditionalPublishProperties": "Configuration=Debug;Platform=AnyCPU",
       "AdditionalPublishPropertiesToRemove": "WebPublishProfileFile;TargetFramework",

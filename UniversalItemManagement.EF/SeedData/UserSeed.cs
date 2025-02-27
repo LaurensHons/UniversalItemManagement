@@ -4,9 +4,10 @@ namespace UniversalItemManagement.EF.SeedData
 {
     public static class UserSeed
     {
+        public static readonly Guid SystemUserGuid = Guid.Parse("00000000-0000-0000-0000-000000000001");
         public static readonly User[] Data = [
             new User() {
-                Id = Guid.Parse("eae351f7-28dd-ee11-904c-000d3a43ea93"),
+                Id = SystemUserGuid,
                 Name = "System",
                 Email = ""
             },

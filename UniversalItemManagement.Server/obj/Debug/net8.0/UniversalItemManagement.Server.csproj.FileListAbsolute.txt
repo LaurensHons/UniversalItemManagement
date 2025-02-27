@@ -20,7 +20,7 @@ E:\Projects\UniversalItemManagement\UniversalItemManagement.Server\obj\Debug\net
 E:\Projects\UniversalItemManagement\UniversalItemManagement.Server\obj\Debug\net8.0\UniversalItemManagement.Server.csproj.CoreCompileInputs.cache
 E:\Projects\UniversalItemManagement\UniversalItemManagement.Server\obj\Debug\net8.0\UniversalItemManagement.Server.MvcApplicationPartsAssemblyInfo.cs
 E:\Projects\UniversalItemManagement\UniversalItemManagement.Server\obj\Debug\net8.0\UniversalItemManagement.Server.MvcApplicationPartsAssemblyInfo.cache
-E:\Projects\UniversalItemManagement\UniversalItemManagement.Server\obj\Debug\net8.0\scopedcss\bundle\UniversalItemManagement.Server.styles.css
+E:\Projects\UniversalItemManagement\UniversalItemManagement.Server\obj\Debug\net8.0\scopedcss\bundle\UniversalItemManagement.Server.styles.scss
 E:\Projects\UniversalItemManagement\UniversalItemManagement.Server\obj\Debug\net8.0\staticwebassets.build.json
 E:\Projects\UniversalItemManagement\UniversalItemManagement.Server\obj\Debug\net8.0\staticwebassets.development.json
 E:\Projects\UniversalItemManagement\UniversalItemManagement.Server\obj\Debug\net8.0\staticwebassets.build.endpoints.json
@@ -204,3 +204,4 @@ E:\Projects\UniversalItemManagement\UniversalItemManagement.Server\bin\Debug\net
 E:\Projects\UniversalItemManagement\UniversalItemManagement.Server\bin\Debug\net8.0\zh-Hans\Aspire.Hosting.resources.dll
 E:\Projects\UniversalItemManagement\UniversalItemManagement.Server\bin\Debug\net8.0\zh-Hant\Aspire.Hosting.resources.dll
 E:\Projects\UniversalItemManagement\UniversalItemManagement.Server\bin\Debug\net8.0\runtimes\win\lib\net8.0\System.Diagnostics.EventLog.dll
+E:\Projects\UniversalItemManagement\UniversalItemManagement.Server\obj\Debug\net8.0\UniversalItemManagement.Server.sourcelink.json

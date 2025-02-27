@@ -11,39 +11,20 @@ namespace UniversalItemManagement.EF.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AlterColumn<DateTime>(
-                name: "ModifiedOn",
-                table: "Users",
-                type: "datetime2",
-                nullable: false,
-                defaultValueSql: "GETDATE()",
-                oldClrType: typeof(DateTime),
-                oldType: "datetime2");
-
-            migrationBuilder.AlterColumn<DateTime>(
-                name: "CreatedOn",
-                table: "Users",
-                type: "datetime2",
-                nullable: false,
-                defaultValueSql: "GETDATE()",
-                oldClrType: typeof(DateTime),
-                oldType: "datetime2");
-
-            migrationBuilder.AlterColumn<Guid>(
-                name: "ModifiedById",
-                table: "Records",
-                type: "uniqueidentifier",
-                nullable: true,
-                oldClrType: typeof(Guid),
-                oldType: "uniqueidentifier");
-
-            migrationBuilder.AlterColumn<Guid>(
-                name: "CreatedById",
-                table: "Records",
-                type: "uniqueidentifier",
-                nullable: true,
-                oldClrType: typeof(Guid),
-                oldType: "uniqueidentifier");
+            migrationBuilder.CreateTable(
+                name: "Users",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()"),
+                    ModifiedOn = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Users", x => x.Id);
+                });
 
             migrationBuilder.CreateTable(
                 name: "FieldProperty",
@@ -100,6 +81,33 @@ namespace UniversalItemManagement.EF.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Records",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()"),
+                    ModifiedOn = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()"),
+                    CreatedById = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    ModifiedById = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Records", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Records_Users_CreatedById",
+                        column: x => x.CreatedById,
+                        principalTable: "Users",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Records_Users_ModifiedById",
+                        column: x => x.ModifiedById,
+                        principalTable: "Users",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Field",
                 columns: table => new
                 {
@@ -150,9 +158,14 @@ namespace UniversalItemManagement.EF.Migrations
                 });
 
             migrationBuilder.InsertData(
+                table: "Records",
+                columns: new[] { "Id", "CreatedById", "Description", "ModifiedById", "Name" },
+                values: new object[] { new Guid("342ea86c-fc10-4c46-b833-b94aac3a6772"), null, "Bla", null, "Test" });
+
+            migrationBuilder.InsertData(
                 table: "Users",
                 columns: new[] { "Id", "Email", "Name" },
-                values: new object[] { new Guid("eae351f7-28dd-ee11-904c-000d3a43ea93"), "", "System" });
+                values: new object[] { new Guid("00000000-0000-0000-0000-000000000001"), "", "System" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Field_CreatedById",
@@ -198,6 +211,16 @@ namespace UniversalItemManagement.EF.Migrations
                 name: "IX_FieldValue_ModifiedById",
                 table: "FieldValue",
                 column: "ModifiedById");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Records_CreatedById",
+                table: "Records",
+                column: "CreatedById");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Records_ModifiedById",
+                table: "Records",
+                column: "ModifiedById");
         }
 
         /// <inheritdoc />
@@ -212,48 +235,11 @@ namespace UniversalItemManagement.EF.Migrations
             migrationBuilder.DropTable(
                 name: "FieldValue");
 
-            migrationBuilder.DeleteData(
-                table: "Users",
-                keyColumn: "Id",
-                keyValue: new Guid("eae351f7-28dd-ee11-904c-000d3a43ea93"));
+            migrationBuilder.DropTable(
+                name: "Records");
 
-            migrationBuilder.AlterColumn<DateTime>(
-                name: "ModifiedOn",
-                table: "Users",
-                type: "datetime2",
-                nullable: false,
-                oldClrType: typeof(DateTime),
-                oldType: "datetime2",
-                oldDefaultValueSql: "GETDATE()");
-
-            migrationBuilder.AlterColumn<DateTime>(
-                name: "CreatedOn",
-                table: "Users",
-                type: "datetime2",
-                nullable: false,
-                oldClrType: typeof(DateTime),
-                oldType: "datetime2",
-                oldDefaultValueSql: "GETDATE()");
-
-            migrationBuilder.AlterColumn<Guid>(
-                name: "ModifiedById",
-                table: "Records",
-                type: "uniqueidentifier",
-                nullable: false,
-                defaultValue: new Guid("00000000-0000-0000-0000-000000000000"),
-                oldClrType: typeof(Guid),
-                oldType: "uniqueidentifier",
-                oldNullable: true);
-
-            migrationBuilder.AlterColumn<Guid>(
-                name: "CreatedById",
-                table: "Records",
-                type: "uniqueidentifier",
-                nullable: false,
-                defaultValue: new Guid("00000000-0000-0000-0000-000000000000"),
-                oldClrType: typeof(Guid),
-                oldType: "uniqueidentifier",
-                oldNullable: true);
+            migrationBuilder.DropTable(
+                name: "Users");
         }
     }
 }

@@ -13,33 +13,40 @@ import {
   removeEntity,
   updateEntity,
 } from './entity.actions';
+import { EntityState } from './entity.reducer';
 
 @Injectable({
   providedIn: 'root',
 })
-export abstract class EntityFacade<
-  T extends Entity,
-  Enum extends { [s: number]: string }
-> {
+export abstract class EntityFacade<T extends Entity, Enum extends string> {
   constructor(
     private _store: Store<CoreFeature>,
     private entityFeatureKey: string
   ) {}
 
   entityState = (state: CoreFeature) =>
-    (state.coreFeature as any)[this.entityFeatureKey];
+    (state.coreFeature as any)[this.entityFeatureKey] as EntityState<Enum>;
 
-  entities$ = this._store.pipe(
+  state$ = this._store.pipe(
     select(this.entityState),
     map((state) => state.entities)
   );
 
-  entity$(entitySlice: Enum): Observable<T[]> {
-    return this.entities$.pipe(
+  entities$<T extends Entity>(entitySlice: Enum): Observable<T[]> {
+    return this.state$.pipe(
       map((entities) => entities[entitySlice]?.list),
-      map((entities) => Object.values(entities ?? {}).filter((x) => !!x)),
+      map(
+        (entities) => Object.values(entities ?? {}).filter((x) => !!x) as T[]
+      ),
       filter((entities) => !!entities)
-    ) as Observable<T[]>;
+    );
+  }
+
+  entity$(entitySlice: Enum, id: string): Observable<T> {
+    return this.state$.pipe(
+      map((entities) => entities[entitySlice]?.list[id] as T),
+      filter((entity) => !!entity)
+    );
   }
 
   getEntities(entitySlice: Enum) {

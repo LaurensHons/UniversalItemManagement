@@ -20,64 +20,57 @@ import {
   RecordEntities,
   RecordFacade,
 } from 'src/app/core/domain/store/record/record.state';
+import { RecordComponent } from '../record/record.component';
+import { NewRecordComponent } from '../new-record/new-record.component';
+import {
+  Router,
+  RouterLink,
+  RouterLinkActive,
+  RouterOutlet,
+} from '@angular/router';
 
 @Component({
   selector: 'app-record-list',
   standalone: true,
   imports: [
     CommonModule,
-    FormsModule,
-    ReactiveFormsModule,
-    MatFormFieldModule,
-    MatInputModule,
+    RecordComponent,
     MatButtonModule,
     MatIconModule,
+    NewRecordComponent,
+    RouterOutlet,
+    RouterLink,
+    RouterLinkActive,
   ],
   templateUrl: './record-list.component.html',
-  styleUrls: ['./record-list.component.css'],
+  styleUrls: ['./record-list.component.scss'],
 })
 export class RecordListComponent {
   public records: Record[] = [];
 
-  form!: FormGroup;
   connectionTested = false;
 
   editingRecord: Record | null = null;
+  newRecord = false;
 
-  constructor(private recordService: RecordFacade) {}
+  constructor(private recordService: RecordFacade, router: Router) {}
 
   ngOnInit(): void {
-    this.form = new FormGroup({
-      name: new FormControl('', [Validators.required]),
-      description: new FormControl(''),
-    });
     this.recordService.getEntities(RecordEntities.Record).subscribe();
-    this.recordService.entity$(RecordEntities.Record).subscribe((records) => {
-      this.records = records;
-    });
-  }
-
-  saveRecord() {
-    this.form.markAllAsTouched();
-    if (this.form.invalid) return;
-    const record = this.editingRecord
-      ? new Record({ ...this.editingRecord, ...this.form.value })
-      : new Record(this.form.value);
-    this.editingRecord
-      ? this.recordService
-          .updateEntity(RecordEntities.Record, record)
-          .subscribe((record) => {
-            this.editingRecord = null;
-            this.form.reset();
-          })
-      : this.recordService.addEntity(RecordEntities.Record, record).subscribe();
+    this.recordService
+      .entities$<Record>(RecordEntities.Record)
+      .subscribe((records) => {
+        this.records = records;
+      });
   }
 
   editRecord(record: Record) {
     this.editingRecord = record;
-    this.form.setValue({
-      name: record.name,
-      description: record.description,
-    });
+    this.newRecord = false;
+  }
+
+  startNewRecord() {
+    this.newRecord = true;
+    this.editingRecord = null;
   }
 }

@@ -1,46 +1,23 @@
-<h1 id="tableLabel">Records</h1>
+<div class="sideBar">
+  <div class="top d-flex">
+    <h2>Records</h2>
+    <button mat-stroked-button [routerLink]="'new'">
+      <mat-icon>add</mat-icon>
+    </button>
+  </div>
+  <div class="list">
+    <ul>
+      <li *ngFor="let record of records">
+        <a
+          [routerLink]="['record', record.id]"
+          routerLinkActive="router-link-active"
+          >{{ record.name }}</a
+        >
+      </li>
+    </ul>
+  </div>
+</div>
 
-<table *ngIf="records" [formGroup]="form" class="m-auto">
-  <thead>
-    <tr>
-      <th>Name</th>
-      <th>Description</th>
-      <th></th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr
-      *ngFor="let record of records"
-      [ngClass]="{ 'row-active': record.id === editingRecord?.id }"
-    >
-      <td>{{ record.name }}</td>
-      <td>{{ record.description }}</td>
-      <td>
-        <button mat-stroked-button (click)="editRecord(record)">
-          <mat-icon>edit</mat-icon>
-        </button>
-      </td>
-    </tr>
-    <tr>
-      <td>
-        <mat-form-field appearance="outline" class="no-subscript-wrapper">
-          <input matInput placeholder="Name" formControlName="name" />
-        </mat-form-field>
-      </td>
-      <td>
-        <mat-form-field appearance="outline" class="no-subscript-wrapper">
-          <input
-            matInput
-            placeholder="Description"
-            formControlName="description"
-          />
-        </mat-form-field>
-      </td>
-      <td>
-        <button mat-stroked-button (click)="saveRecord()">
-          <mat-icon>save</mat-icon>
-        </button>
-      </td>
-    </tr>
-  </tbody>
-</table>
+<h1 id="tableLabel">Records</h1>
+<p>blabla content</p>
+<router-outlet />

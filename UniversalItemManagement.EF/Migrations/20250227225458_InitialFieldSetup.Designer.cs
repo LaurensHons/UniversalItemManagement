@@ -12,7 +12,7 @@ using UniversalItemManagement.EF.Domain.Infrastructure;
 namespace UniversalItemManagement.EF.Migrations
 {
     [DbContext(typeof(Context))]
-    [Migration("20250227221308_InitialFieldSetup")]
+    [Migration("20250227225458_InitialFieldSetup")]
     partial class InitialFieldSetup
     {
         /// <inheritdoc />
@@ -205,6 +205,14 @@ namespace UniversalItemManagement.EF.Migrations
                     b.HasIndex("ModifiedById");
 
                     b.ToTable("Records");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("342ea86c-fc10-4c46-b833-b94aac3a6772"),
+                            Description = "Bla",
+                            Name = "Test"
+                        });
                 });
 
             modelBuilder.Entity("UniversalItemManagement.EF.Domain.Models.Entities.User", b =>
@@ -238,7 +246,7 @@ namespace UniversalItemManagement.EF.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("eae351f7-28dd-ee11-904c-000d3a43ea93"),
+                            Id = new Guid("00000000-0000-0000-0000-000000000001"),
                             CreatedOn = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "",
                             ModifiedOn = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),

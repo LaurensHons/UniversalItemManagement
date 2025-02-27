@@ -1,0 +1,16 @@
+<p>record works!</p>
+
+<p>Name: {{ record?.name }}</p>
+<p>Description: {{ record?.description }}</p>
+
+<div [formGroup]="form">
+  <mat-form-field appearance="outline" class="no-subscript-wrapper">
+    <input matInput placeholder="Name" formControlName="name" />
+  </mat-form-field>
+  <mat-form-field appearance="outline" class="no-subscript-wrapper">
+    <input matInput placeholder="Description" formControlName="description" />
+  </mat-form-field>
+  <button mat-stroked-button (click)="saveRecord()">
+    <mat-icon>save</mat-icon>
+  </button>
+</div>

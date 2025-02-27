@@ -11,6 +11,8 @@ import { StoreModule } from '@ngrx/store';
 import { EffectsModule } from '@ngrx/effects';
 import { ENITTY_REDUCER_FACTORY } from './core/domain/store/base-entity/entity.reducer';
 import { BehaviorSubject } from 'rxjs';
+import { provideRouter } from '@angular/router';
+import { routes } from './core/app.routes';
 
 @NgModule({
   declarations: [AppComponent],
@@ -29,6 +31,7 @@ import { BehaviorSubject } from 'rxjs';
       provide: ENITTY_REDUCER_FACTORY,
       useValue: new BehaviorSubject({}),
     },
+    provideRouter(routes),
   ],
   bootstrap: [AppComponent],
 })

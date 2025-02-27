@@ -41,7 +41,7 @@ namespace UniversalItemManagement.EF.Domain.Infrastructure
         }
         public override int SaveChanges()
         {
-            var userId = Guid.Empty;
+            var userId = UserSeed.SystemUserGuid;
 
             var updatedEntities = ChangeTracker.Entries()
                    .Where(x => x.State == EntityState.Modified)
@@ -140,7 +140,8 @@ namespace UniversalItemManagement.EF.Domain.Infrastructure
             modelBuilder.Entity<User>().Property(e => e.ModifiedOn).IsRequired().HasDefaultValueSql("GETDATE()");
 
             modelBuilder.Entity<User>().HasData(UserSeed.Data);
-
+            modelBuilder.Entity<Record>().HasData(RecordSeed.Data);
+            
             modelBuilder.Entity<FieldProperty>()
                 .Property(FieldPropertyType => FieldPropertyType.Type)
                 .HasConversion(new EnumToStringConverter<FieldPropertyType>());

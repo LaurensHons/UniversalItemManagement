@@ -1,0 +1,12 @@
+<h4>New Record</h4>
+<div [formGroup]="form">
+  <mat-form-field appearance="outline" class="no-subscript-wrapper">
+    <input matInput placeholder="Name" formControlName="name" />
+  </mat-form-field>
+  <mat-form-field appearance="outline" class="no-subscript-wrapper">
+    <input matInput placeholder="Description" formControlName="description" />
+  </mat-form-field>
+  <button mat-stroked-button (click)="saveRecord()">
+    <mat-icon>save</mat-icon>
+  </button>
+</div>
