@@ -1,0 +1,6 @@
+@UniversalItemManagement.Server_HostAddress = http://localhost:5232
+
+GET {{UniversalItemManagement.Server_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

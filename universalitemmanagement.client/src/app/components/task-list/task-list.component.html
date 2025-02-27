@@ -1,0 +1,46 @@
+<h1 id="tableLabel">Tasks</h1>
+
+<table *ngIf="tasks" [formGroup]="form" class="m-auto">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Description</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr
+      *ngFor="let task of tasks"
+      [ngClass]="{ 'row-active': task.id === editingTask?.id }"
+    >
+      <td>{{ task.name }}</td>
+      <td>{{ task.description }}</td>
+      <td>
+        <button mat-stroked-button (click)="editTask(task)">
+          <mat-icon>edit</mat-icon>
+        </button>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <mat-form-field appearance="outline" class="no-subscript-wrapper">
+          <input matInput placeholder="Name" formControlName="name" />
+        </mat-form-field>
+      </td>
+      <td>
+        <mat-form-field appearance="outline" class="no-subscript-wrapper">
+          <input
+            matInput
+            placeholder="Description"
+            formControlName="description"
+          />
+        </mat-form-field>
+      </td>
+      <td>
+        <button mat-stroked-button (click)="saveTask()">
+          <mat-icon>save</mat-icon>
+        </button>
+      </td>
+    </tr>
+  </tbody>
+</table>
