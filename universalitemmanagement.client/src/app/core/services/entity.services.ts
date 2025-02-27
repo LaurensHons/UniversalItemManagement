@@ -1,13 +1,13 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { EntityService } from './entity.service';
-import { UTask } from '../models/utask.model';
+import { Record } from '../models/record.model';
 
 @Injectable({
   providedIn: 'root',
 })
-export class UtaskService extends EntityService<UTask> {
+export class RecordService extends EntityService<Record> {
   constructor(http: HttpClient) {
-    super(http, 'Utask', UTask);
+    super(http, 'Record', Record);
   }
 }

@@ -25,7 +25,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\universalitemmanagement.client\universalitemmanagement.client.esproj">
+    <ProjectReference Include="..\universalitemmanagement.client\Universalitemmanagement.client.esproj">
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
     <ProjectReference Include="..\UniversalItemManagement.EF\UniversalItemManagement.EF.csproj" />

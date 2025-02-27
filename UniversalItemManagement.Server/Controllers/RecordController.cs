@@ -9,9 +9,9 @@ namespace UniversalItemManagement.Server.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class UTaskController : AbstractController<UTask>
+    public class RecordController : AbstractController<Record>
     {
-        public UTaskController(ILogger<AbstractController<UTask>> logger, Context context, IEntityRepository<UTask> repo) : base(logger, context, repo)
+        public RecordController(ILogger<AbstractController<Record>> logger, Context context, IEntityRepository<Record> repo) : base(logger, context, repo)
         {
         }
     }

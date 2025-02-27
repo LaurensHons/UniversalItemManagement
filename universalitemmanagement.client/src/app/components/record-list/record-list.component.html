@@ -1,6 +1,6 @@
-<h1 id="tableLabel">Tasks</h1>
+<h1 id="tableLabel">Records</h1>
 
-<table *ngIf="tasks" [formGroup]="form" class="m-auto">
+<table *ngIf="records" [formGroup]="form" class="m-auto">
   <thead>
     <tr>
       <th>Name</th>
@@ -10,13 +10,13 @@
   </thead>
   <tbody>
     <tr
-      *ngFor="let task of tasks"
-      [ngClass]="{ 'row-active': task.id === editingTask?.id }"
+      *ngFor="let record of records"
+      [ngClass]="{ 'row-active': record.id === editingRecord?.id }"
     >
-      <td>{{ task.name }}</td>
-      <td>{{ task.description }}</td>
+      <td>{{ record.name }}</td>
+      <td>{{ record.description }}</td>
       <td>
-        <button mat-stroked-button (click)="editTask(task)">
+        <button mat-stroked-button (click)="editRecord(record)">
           <mat-icon>edit</mat-icon>
         </button>
       </td>
@@ -37,7 +37,7 @@
         </mat-form-field>
       </td>
       <td>
-        <button mat-stroked-button (click)="saveTask()">
+        <button mat-stroked-button (click)="saveRecord()">
           <mat-icon>save</mat-icon>
         </button>
       </td>

@@ -1,29 +1,30 @@
 import { Inject, InjectionToken } from '@angular/core';
-import {
-  UTaskReducer,
-  UTaskState,
-  UTaskFeatureKey,
-  UTaskEntityEffects,
-} from './task/task.state';
+
 import { ActionReducerMap } from '@ngrx/store';
 import { ENITTY_REDUCER_FACTORY } from './base-entity/entity.reducer';
+import {
+  RecordFeatureKey,
+  RecordState,
+  RecordReducer,
+  RecordEntityEffects,
+} from './record/record.state';
 
 export const featureKey = 'coreFeature';
 
 export interface CoreState {
-  [UTaskFeatureKey]: UTaskState;
+  [RecordFeatureKey]: RecordState;
 }
 
 export const reducers = new InjectionToken<ActionReducerMap<CoreState>>(
   featureKey,
   {
     factory: () => ({
-      [UTaskFeatureKey]: UTaskReducer,
+      [RecordFeatureKey]: RecordReducer,
     }),
   }
 );
 
-export const effects = [UTaskEntityEffects];
+export const effects = [RecordEntityEffects];
 
 export interface CoreFeature {
   [featureKey]: CoreState;

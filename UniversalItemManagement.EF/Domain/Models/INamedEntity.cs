@@ -4,11 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace UniversalItemManagement.EF.Domain.Models.Entities
+namespace UniversalItemManagement.EF.Domain.Models
 {
-    public class UTask : Entity
+    public interface INamedEntity
     {
         public string Name { get; set; }
-        public string Description { get; set; }
     }
 }

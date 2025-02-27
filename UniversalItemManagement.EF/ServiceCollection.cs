@@ -20,7 +20,7 @@ namespace UniversalItemManagement.EF
                 o.UseSqlServer(Environment.GetEnvironmentVariable("DB_CONNECTION_STRING"));
             }, ServiceLifetime.Transient);
 
-            services.AddTransient<IEntityRepository<UTask>, EntityRepository<UTask>>();
+            services.AddTransient<IEntityRepository<Record>, EntityRepository<Record>>();
 
             return services;
         }

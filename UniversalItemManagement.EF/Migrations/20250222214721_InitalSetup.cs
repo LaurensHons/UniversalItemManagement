@@ -27,7 +27,7 @@ namespace UniversalItemManagement.EF.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Tasks",
+                name: "Records",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -40,27 +40,27 @@ namespace UniversalItemManagement.EF.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Tasks", x => x.Id);
+                    table.PrimaryKey("PK_Records", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Tasks_Users_CreatedById",
+                        name: "FK_Records_Users_CreatedById",
                         column: x => x.CreatedById,
                         principalTable: "Users",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_Tasks_Users_ModifiedById",
+                        name: "FK_Records_Users_ModifiedById",
                         column: x => x.ModifiedById,
                         principalTable: "Users",
                         principalColumn: "Id");
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Tasks_CreatedById",
-                table: "Tasks",
+                name: "IX_Records_CreatedById",
+                table: "Records",
                 column: "CreatedById");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Tasks_ModifiedById",
-                table: "Tasks",
+                name: "IX_Records_ModifiedById",
+                table: "Records",
                 column: "ModifiedById");
         }
 
@@ -68,7 +68,7 @@ namespace UniversalItemManagement.EF.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Tasks");
+                name: "Records");
 
             migrationBuilder.DropTable(
                 name: "Users");

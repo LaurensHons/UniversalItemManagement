@@ -3,7 +3,7 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
 import { AppComponent } from './app.component';
-import { TaskListComponent } from './components/task-list/task-list.component';
+import { RecordListComponent } from './components/record-list/record-list.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { CoreStateModule } from './core/domain/core.state.module';
@@ -18,7 +18,7 @@ import { BehaviorSubject } from 'rxjs';
     BrowserModule,
     HttpClientModule,
     BrowserAnimationsModule,
-    TaskListComponent,
+    RecordListComponent,
     NgbModule,
     StoreModule.forRoot({}),
     EffectsModule.forRoot([]),

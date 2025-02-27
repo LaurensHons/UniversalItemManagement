@@ -1,19 +1,21 @@
 ﻿using IdentityModel;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using UniversalItemManagement.EF.Domain.Models;
 using UniversalItemManagement.EF.Domain.Models.Entities;
+using UniversalItemManagement.EF.Domain.Models.Entities.Fields;
 using UniversalItemManagement.EF.SeedData;
 
 namespace UniversalItemManagement.EF.Domain.Infrastructure
 {
     public class Context : DbContext
     {
-        public DbSet<UTask> Tasks
+        public DbSet<Record> Records
         {
             get; set;
         }
@@ -138,6 +140,10 @@ namespace UniversalItemManagement.EF.Domain.Infrastructure
             modelBuilder.Entity<User>().Property(e => e.ModifiedOn).IsRequired().HasDefaultValueSql("GETDATE()");
 
             modelBuilder.Entity<User>().HasData(UserSeed.Data);
+
+            modelBuilder.Entity<FieldProperty>()
+                .Property(FieldPropertyType => FieldPropertyType.Type)
+                .HasConversion(new EnumToStringConverter<FieldPropertyType>());
 
             base.OnModelCreating(modelBuilder);
         }
