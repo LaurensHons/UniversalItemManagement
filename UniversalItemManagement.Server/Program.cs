@@ -5,6 +5,8 @@ using UniversalItemManagement.Server;
 using UniversalItemManagement.Server.Services.Contracts;
 using UniversalItemManagement.Server.Services;
 using UniversalItemManagement.Server.Services.BackGroundTasks;
+using UniversalItemManagement.Server.Middleware;
+using UniversalItemManagement.Server.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -32,10 +34,9 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy(name: "FrontEndUI", policy =>
     {
-        policy.WithOrigins("https://localhost:63820").AllowAnyMethod().AllowAnyHeader().AllowAnyOrigin();
+        policy.WithOrigins("https://localhost:63820").AllowAnyMethod().AllowAnyHeader().AllowCredentials();
     });
 });
-
 
 
 var app = builder.Build();
@@ -52,6 +53,17 @@ if (app.Environment.IsDevelopment())
 }
 
 app.BuildEndpoints();
+
+app.Use(async (context, next) =>
+{
+    var connectionId = context.Request.Headers[EntityHub.ConnectionCookieKey];
+    if (!string.IsNullOrWhiteSpace(connectionId))
+        context.RequestServices.GetRequiredService<HubConnectionService>().ConnectionId = connectionId;
+
+    await next();
+});
+
+app.BuildApplication();
 
 app.UseHttpsRedirection();
 

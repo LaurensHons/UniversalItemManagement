@@ -2,6 +2,11 @@
 
 namespace UniversalItemManagement.Server.Services.BackGroundTasks
 {
+    /*
+     * 
+     * Takes Tasks from the BackgroundTaskService and executes them
+     * 
+     */
     public sealed class QueuedHostedService(
         IBackgroundTaskQueue taskQueue,
         ILogger<QueuedHostedService> logger) : BackgroundService

@@ -3,6 +3,11 @@ using UniversalItemManagement.Server.Services.Contracts;
 
 namespace UniversalItemManagement.Server.Services.BackGroundTasks
 {
+    /*
+     * 
+     * Queue of background tasks
+     * 
+     */
     public class DefaultBackgroundTaskQueue : IBackgroundTaskQueue
     {
         private readonly Channel<Func<CancellationToken, Task>> _queue;

@@ -1,4 +1,10 @@
-import { HttpClientModule } from '@angular/common/http';
+import {
+  HTTP_INTERCEPTORS,
+  HttpClientModule,
+  provideHttpClient,
+  withInterceptors,
+  withInterceptorsFromDi,
+} from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
@@ -13,6 +19,7 @@ import { ENITTY_REDUCER_FACTORY } from './core/domain/store/base-entity/entity.r
 import { BehaviorSubject } from 'rxjs';
 import { provideRouter } from '@angular/router';
 import { routes } from './core/app.routes';
+import { ConnectionIdMiddleware } from './core/domain/store/signals/connectionId.middleware';
 
 @NgModule({
   declarations: [AppComponent],
@@ -32,6 +39,12 @@ import { routes } from './core/app.routes';
       useValue: new BehaviorSubject({}),
     },
     provideRouter(routes),
+    provideHttpClient(withInterceptorsFromDi()),
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: ConnectionIdMiddleware,
+      multi: true,
+    },
   ],
   bootstrap: [AppComponent],
 })

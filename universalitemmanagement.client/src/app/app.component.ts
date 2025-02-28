@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { SignalRService } from './core/domain/store/signal.service';
+import { SignalRService } from './core/domain/store/signals/signal.service';
 import { addEntityResolved } from './core/domain/store/base-entity/entity.actions';
 import { RecordEntities } from './core/domain/store/record/record.state';
 import { Entity } from './core/models/entity';

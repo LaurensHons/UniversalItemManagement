@@ -5,6 +5,7 @@ using UniversalItemManagement.EF.Domain.Models;
 using UniversalItemManagement.EF.Domain.Services.Contracts;
 using UniversalItemManagement.EF.Domain.Services.Repositories;
 using UniversalItemManagement.Server.Hubs;
+using UniversalItemManagement.Server.Middleware;
 using UniversalItemManagement.Server.Services.Contracts;
 
 namespace UniversalItemManagement.Server.Services
@@ -14,23 +15,23 @@ namespace UniversalItemManagement.Server.Services
         IEntityRepository<T> entityRepository;
         IHubContext<EntityHub, IClient> entityHub;
         IBackgroundTaskQueue backgroundTaskQueue;
+        HubConnectionService connectionService;
         HubEnum? topicValue = null;
 
-        EnumToStringConverter<HubEnum> converter = new EnumToStringConverter<HubEnum>();
 
         public EntityUpdatedService(
-            IEntityRepository<T> _entityRepository,
-            IHubContext<EntityHub, IClient> _entityHub,
-            IBackgroundTaskQueue _backgroundTaskQueue,
+            IServiceProvider provider,
             HubEnum? _topicValue = null
         ) {
-            entityRepository = _entityRepository;
-            entityHub = _entityHub;
-            backgroundTaskQueue = _backgroundTaskQueue;
-            topicValue = _topicValue;
 
-            
+            entityRepository = provider.GetRequiredService<IEntityRepository<T>>();
+            entityHub = provider.GetRequiredService<IHubContext<EntityHub, IClient>>();
+            backgroundTaskQueue = provider.GetRequiredService<IBackgroundTaskQueue>();
+            connectionService = provider.GetRequiredService<HubConnectionService>();
+            topicValue = _topicValue;
         }
+
+        string ConnectionId { get { return this.connectionService.ConnectionId; } }
 
         public Task<T> FindByIdAsync(Guid id)
         {
@@ -45,7 +46,12 @@ namespace UniversalItemManagement.Server.Services
         {
             var value = await entityRepository.Add(entity);
             if (topicValue.HasValue)
-                await entityHub.Clients.All.AddEntities(Enum.GetName(topicValue.Value)!, new List<T>() { entity });
+            {
+                if (string.IsNullOrWhiteSpace(ConnectionId))
+                    await this.backgroundTaskQueue.QueueBackgroundWorkItemAsync((_) => entityHub.Clients.All.AddEntities(Enum.GetName(topicValue.Value)!, new List<T>() { entity }));
+                else
+                    await this.backgroundTaskQueue.QueueBackgroundWorkItemAsync((_) => entityHub.Clients.AllExcept([ConnectionId]).AddEntities(Enum.GetName(topicValue.Value)!, new List<T>() { entity }));
+            }
             return value;
         }
 
@@ -53,30 +59,30 @@ namespace UniversalItemManagement.Server.Services
         {
             var value = await entityRepository.Update(entity);
             if (topicValue.HasValue)
-                    await entityHub.Clients.All.UpdateEntities(Enum.GetName(topicValue.Value)!, new List<T>() { entity });
-                //await this.backgroundTaskQueue.QueueBackgroundWorkItemAsync(async (_) =>
-                //{
-                //    Console.WriteLine("Doin the thing");
-                //    await entityHub.UpdateEntities(topicValue.Value, new List<T>() { entity });
-                //    return; 
-                //});
-                return value;
+            {
+                if (string.IsNullOrWhiteSpace(ConnectionId))
+                    await this.backgroundTaskQueue.QueueBackgroundWorkItemAsync((_) => entityHub.Clients.All.UpdateEntities(Enum.GetName(topicValue.Value)!, new List<T>() { entity }));
+                else
+                    await this.backgroundTaskQueue.QueueBackgroundWorkItemAsync((_) => entityHub.Clients.AllExcept([ConnectionId]).UpdateEntities(Enum.GetName(topicValue.Value)!, new List<T>() { entity }));
+            }
+            return value;
         }
 
         public async Task Delete(T entity)
         {
-            await entityRepository.DeleteById(entity.Id);
-            if (topicValue.HasValue)
-                await entityHub.Clients.All.DeleteEntities(Enum.GetName(topicValue.Value)!, new List<Guid>() { entity.Id });
-            return;
+            await DeleteById(entity.Id);
         }
 
         public async Task DeleteById(Guid id)
         {
             await entityRepository.DeleteById(id);
             if (topicValue.HasValue)
-                await entityHub.Clients.All.DeleteEntities(Enum.GetName(topicValue.Value)!, new List<Guid>() { id });
-            return;
+               {
+                if (string.IsNullOrWhiteSpace(ConnectionId))
+                    await this.backgroundTaskQueue.QueueBackgroundWorkItemAsync((_) => entityHub.Clients.All.DeleteEntities(Enum.GetName(topicValue.Value)!, new List<Guid>() { id }));
+                else
+                    await this.backgroundTaskQueue.QueueBackgroundWorkItemAsync((_) => entityHub.Clients.AllExcept([ConnectionId]).DeleteEntities(Enum.GetName(topicValue.Value)!, new List<Guid>() {id }));
+            }
         }
     }
 }

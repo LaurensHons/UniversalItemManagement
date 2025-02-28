@@ -2,19 +2,19 @@ import { Injectable, isDevMode } from '@angular/core';
 import { first, Observable } from 'rxjs';
 import { HubConnection, HubConnectionBuilder } from '@microsoft/signalr';
 import * as signalR from '@microsoft/signalr';
-import { Entity } from '../../models/entity';
-import { CoreFeature } from './core.feature';
+import { Entity } from '../../../models/entity';
+import { CoreFeature } from '../core.feature';
 import { ActionCreator, Store } from '@ngrx/store';
 import { Action, TypedAction } from '@ngrx/store/src/models';
-import { ActionBase } from './base/action-base.interface';
+import { ActionBase } from '../base/action-base.interface';
 import { act } from '@ngrx/effects';
 import {
   addEntitiesResolved,
   addEntityResolved,
   deleteEntitiesResolved,
   updateEntitiesResolved,
-} from './base-entity/entity.actions';
-import { GetLocalOrigin } from '../../services/entity.service';
+} from '../base-entity/entity.actions';
+import { GetLocalOrigin } from '../../../services/entity.service';
 
 export enum OperationType {
   ADD = 'AddEntities',
@@ -33,7 +33,6 @@ export class SignalRService {
   initConnection() {
     let builder = new HubConnectionBuilder()
       .withUrl(GetLocalOrigin() + '/Hub', {
-        skipNegotiation: true, // skipNegotiation as we specify WebSockets
         transport: signalR.HttpTransportType.WebSockets,
       })
       .configureLogging(signalR.LogLevel.Information)

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.SignalR;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.AspNetCore.SignalR.Client;
 using UniversalItemManagement.EF.Domain.Models;
 
@@ -17,10 +18,11 @@ namespace UniversalItemManagement.Server.Hubs
 
     public class EntityHub : Hub<IClient>
     {
+        public static readonly string ConnectionCookieKey = "SRConnectionID";
 
         public EntityHub()
         {
-            var connection = new HubConnectionBuilder();
+           
         }
         public async Task AddEntities(HubEnum entitySlice, IEnumerable<Entity> entity)  =>
             await Clients.Others.AddEntities(Enum.GetName(entitySlice)!, entity);
@@ -30,5 +32,10 @@ namespace UniversalItemManagement.Server.Hubs
 
         public async Task DeleteEntities(HubEnum entitySlice, IEnumerable<Guid> entityIds) =>
             await Clients.Others.DeleteEntities(Enum.GetName(entitySlice)!, entityIds);
+    }
+
+    public static class HubExtensions
+    {
+        
     }
 }
