@@ -18,6 +18,7 @@ namespace UniversalItemManagement.Server
         {
             services.AddSignalR();
             services.AddTransient<EntityHub>();
+            services.AddTransient<EntitySignalService>();
             services.AddScoped<HubConnectionService>();
             services.AddTransient<IEntityService<Record>, EntityUpdatedService<Record>>(
                 (provider) =>
