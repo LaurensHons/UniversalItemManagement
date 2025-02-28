@@ -80,6 +80,14 @@ export const addEntityResolved = (entity: string) =>
     }>()
   );
 
+export const addEntitiesResolved = (entity: string) =>
+  createAction(
+    `[Entity.${entity}] Add entities resolved`,
+    props<{
+      entities: Entity[];
+    }>()
+  );
+
 export const updateEntity = <T extends Entity>(entity: string) =>
   createAction(
     `[Entity.${entity}] Update entity`,
@@ -98,9 +106,17 @@ export const updateEntityResolved = <T extends Entity>(entity: string) =>
     }>()
   );
 
-export const removeEntity = (entity: string) =>
+export const updateEntitiesResolved = <T extends Entity>(entity: string) =>
   createAction(
-    `[Entity.${entity}] Remove entity`,
+    `[Entity.${entity}] Update entities resolved`,
+    props<{
+      entities: T[];
+    }>()
+  );
+
+export const deleteEntity = (entity: string) =>
+  createAction(
+    `[Entity.${entity}] Delete entity`,
     props<
       {
         entityId: string;
@@ -108,10 +124,18 @@ export const removeEntity = (entity: string) =>
     >()
   );
 
-export const removeEntityResolved = (entity: string) =>
+export const deleteEntityResolved = (entity: string) =>
   createAction(
-    `[Entity.${entity}] Remove entity resolved`,
+    `[Entity.${entity}] Delete entity resolved`,
     props<{
       entityId: string;
+    }>()
+  );
+
+export const deleteEntitiesResolved = (entity: string) =>
+  createAction(
+    `[Entity.${entity}] Delete entities resolved`,
+    props<{
+      entityIds: string[];
     }>()
   );

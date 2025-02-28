@@ -3,6 +3,8 @@ import { Injectable } from '@angular/core';
 import { first, map, Observable } from 'rxjs';
 import { Entity } from '../models/entity';
 
+export const GetLocalOrigin = () => `${location.origin.split(':')[1]}:7070`;
+
 @Injectable({
   providedIn: 'root',
 })
@@ -13,7 +15,7 @@ export abstract class EntityService<T extends Entity> {
     private ctor: { new (type: any): T }
   ) {}
 
-  base = `${location.origin.split(':')[1]}:7070/api`;
+  base = GetLocalOrigin() + '/api';
 
   getEntities(
     pageSize: number,

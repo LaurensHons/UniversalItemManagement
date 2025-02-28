@@ -14,8 +14,11 @@ import {
   addEntityResolved,
   getEntitiesResolved,
   getEntityResolved,
-  removeEntityResolved,
+  deleteEntityResolved,
   updateEntityResolved,
+  addEntitiesResolved,
+  updateEntitiesResolved,
+  deleteEntitiesResolved,
 } from './entity.actions';
 
 export const entityFeatureSlice = 'entitiesSlice';
@@ -104,6 +107,26 @@ export const entityResolvedActions = <T extends string>(
       },
     },
   })),
+  on(addEntitiesResolved(entitySlice.toString()), (state, { entities }) => ({
+    ...state,
+    entities: {
+      ...state.entities,
+      [entitySlice]: {
+        ...state.entities[entitySlice],
+        list: {
+          ...state.entities[entitySlice]?.list,
+          ...entities.reduce(
+            (r, v, i, a) => ({
+              ...r,
+              [v.id!]: v,
+            }),
+            {}
+          ),
+        },
+        totalRecordCount: state.entities[entitySlice]?.totalRecordCount ?? 1,
+      },
+    },
+  })),
   on(updateEntityResolved(entitySlice.toString()), (state, { entity }) => ({
     ...state,
     entities: {
@@ -118,7 +141,27 @@ export const entityResolvedActions = <T extends string>(
       },
     },
   })),
-  on(removeEntityResolved(entitySlice.toString()), (state, { entityId }) => ({
+  on(updateEntitiesResolved(entitySlice.toString()), (state, { entities }) => ({
+    ...state,
+    entities: {
+      ...state.entities,
+      [entitySlice]: {
+        ...state.entities[entitySlice],
+        list: {
+          ...state.entities[entitySlice]?.list,
+          ...entities.reduce(
+            (r, v, i, a) => ({
+              ...r,
+              [v.id!]: v,
+            }),
+            {}
+          ),
+        },
+        totalRecordCount: state.entities[entitySlice]?.totalRecordCount ?? 1,
+      },
+    },
+  })),
+  on(deleteEntityResolved(entitySlice.toString()), (state, { entityId }) => ({
     ...state,
     entities: {
       ...state.entities,
@@ -133,4 +176,28 @@ export const entityResolvedActions = <T extends string>(
       },
     },
   })),
+  on(
+    deleteEntitiesResolved(entitySlice.toString()),
+    (state, { entityIds }) => ({
+      ...state,
+      entities: {
+        ...state.entities,
+        [entitySlice]: {
+          ...state.entities[entitySlice],
+          totalRecordCount:
+            (state.entities[entitySlice]?.totalRecordCount ?? 1) - 1,
+          list: {
+            ...state.entities[entitySlice]?.list,
+            ...entityIds.reduce(
+              (r, v, i, a) => ({
+                ...r,
+                [v]: undefined!,
+              }),
+              {}
+            ),
+          },
+        },
+      },
+    })
+  ),
 ];

@@ -7,6 +7,7 @@ using UniversalItemManagement.EF.Domain.Infrastructure;
 using UniversalItemManagement.EF.Domain.Models;
 using UniversalItemManagement.EF.Domain.Models.Entities;
 using UniversalItemManagement.EF.Domain.Services.Contracts;
+using UniversalItemManagement.Server.Services.Contracts;
 
 namespace UniversalItemManagement.Server.Controllers
 {
@@ -14,53 +15,52 @@ namespace UniversalItemManagement.Server.Controllers
     public abstract class AbstractController<T> : ControllerBase where T : Entity
     {
         private readonly ILogger<AbstractController<T>> _logger;
-        private readonly IEntityRepository<T> _repo;
+        private readonly IEntityService<T> _service;
 
         public AbstractController(
-            ILogger<AbstractController<T>> logger, 
-            Context context,
-            IEntityRepository<T> repo
+            ILogger<AbstractController<T>> logger,
+            IEntityService<T> service
             )
         {
             _logger = logger;
-            _repo = repo;
+            _service = service;
         }
 
         [HttpGet()]
         public virtual async Task<IEnumerable<T>> Get()
         {
-            return await _repo.ListAsync();
+            return await _service.ListAsync();
         }
 
         [HttpGet(":id")]
         public virtual async Task<T> GetById([FromRoute] Guid id)
         {
-            return await _repo.FindByIdAsync(id);
+            return await _service.FindByIdAsync(id);
         }
 
         [HttpPost()]
         public virtual async Task<T> Post([FromBody] T task)
         {
-            return await _repo.Add( task);
+            return await _service.Add(task);
         }
 
         [HttpPatch()]
         public virtual async Task<T> Update([FromBody] T task)
         {
-            return await _repo.Update(task);
+            return await _service.Update(task);
         }
 
         [HttpDelete()]
         public virtual async Task<bool> Delete([FromBody] T task)
         {
-            await _repo.Delete(task);
+            await _service.Delete(task);
             return true;
         }
 
-        [HttpDelete("/:id")]
+        [HttpDelete(":id")]
         public virtual async Task<bool> Delete([FromRoute] Guid id)
         {
-            await _repo.DeleteById(id);
+            await _service.DeleteById(id);
             return true;
         }
     }

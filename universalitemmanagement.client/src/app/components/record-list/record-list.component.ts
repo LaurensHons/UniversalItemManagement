@@ -34,10 +34,8 @@ import {
   standalone: true,
   imports: [
     CommonModule,
-    RecordComponent,
     MatButtonModule,
     MatIconModule,
-    NewRecordComponent,
     RouterOutlet,
     RouterLink,
     RouterLinkActive,

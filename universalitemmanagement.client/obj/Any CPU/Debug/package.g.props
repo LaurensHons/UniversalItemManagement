@@ -22,6 +22,7 @@
     <PackageJsonDependenciesAngularPlatformBrowser Condition="$(PackageJsonDependenciesAngularPlatformBrowser) == ''">^15.2.0</PackageJsonDependenciesAngularPlatformBrowser>
     <PackageJsonDependenciesAngularPlatformBrowserDynamic Condition="$(PackageJsonDependenciesAngularPlatformBrowserDynamic) == ''">^15.2.0</PackageJsonDependenciesAngularPlatformBrowserDynamic>
     <PackageJsonDependenciesAngularRouter Condition="$(PackageJsonDependenciesAngularRouter) == ''">^15.2.0</PackageJsonDependenciesAngularRouter>
+    <PackageJsonDependenciesMicrosoftSignalr Condition="$(PackageJsonDependenciesMicrosoftSignalr) == ''">8.0.0</PackageJsonDependenciesMicrosoftSignalr>
     <PackageJsonDependenciesNgBootstrapNgBootstrap Condition="$(PackageJsonDependenciesNgBootstrapNgBootstrap) == ''">^14.2.0</PackageJsonDependenciesNgBootstrapNgBootstrap>
     <PackageJsonDependenciesNgrxEffects Condition="$(PackageJsonDependenciesNgrxEffects) == ''">^15.0.0</PackageJsonDependenciesNgrxEffects>
     <PackageJsonDependenciesNgrxStore Condition="$(PackageJsonDependenciesNgrxStore) == ''">^15.0.0</PackageJsonDependenciesNgrxStore>
@@ -30,6 +31,7 @@
     <PackageJsonDependenciesTypesUuid Condition="$(PackageJsonDependenciesTypesUuid) == ''">^8.3.4</PackageJsonDependenciesTypesUuid>
     <PackageJsonDependenciesBootstrap Condition="$(PackageJsonDependenciesBootstrap) == ''">^5.2.3</PackageJsonDependenciesBootstrap>
     <PackageJsonDependenciesJestEditorSupport Condition="$(PackageJsonDependenciesJestEditorSupport) == ''">*</PackageJsonDependenciesJestEditorSupport>
+    <PackageJsonDependenciesQueueMicrotask Condition="$(PackageJsonDependenciesQueueMicrotask) == ''">^1.2.3</PackageJsonDependenciesQueueMicrotask>
     <PackageJsonDependenciesReduxDevtoolsExtension Condition="$(PackageJsonDependenciesReduxDevtoolsExtension) == ''">^2.13.9</PackageJsonDependenciesReduxDevtoolsExtension>
     <PackageJsonDependenciesRunScriptOs Condition="$(PackageJsonDependenciesRunScriptOs) == ''">*</PackageJsonDependenciesRunScriptOs>
     <PackageJsonDependenciesRxjs Condition="$(PackageJsonDependenciesRxjs) == ''">~7.8.0</PackageJsonDependenciesRxjs>
@@ -47,6 +49,7 @@
     <PackageJsonDevdependenciesKarmaCoverage Condition="$(PackageJsonDevdependenciesKarmaCoverage) == ''">~2.2.0</PackageJsonDevdependenciesKarmaCoverage>
     <PackageJsonDevdependenciesKarmaJasmine Condition="$(PackageJsonDevdependenciesKarmaJasmine) == ''">~5.1.0</PackageJsonDevdependenciesKarmaJasmine>
     <PackageJsonDevdependenciesKarmaJasmineHtmlReporter Condition="$(PackageJsonDevdependenciesKarmaJasmineHtmlReporter) == ''">~2.0.0</PackageJsonDevdependenciesKarmaJasmineHtmlReporter>
+    <PackageJsonDevdependenciesSchematicsScssMigrate Condition="$(PackageJsonDevdependenciesSchematicsScssMigrate) == ''">^2.3.17</PackageJsonDevdependenciesSchematicsScssMigrate>
     <PackageJsonDevdependenciesTypescript Condition="$(PackageJsonDevdependenciesTypescript) == ''">~4.9.4</PackageJsonDevdependenciesTypescript>
   </PropertyGroup>
 </Project>

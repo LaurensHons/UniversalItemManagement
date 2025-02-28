@@ -14,8 +14,8 @@ import {
   getEntitiesResolved,
   getEntity,
   getEntityResolved,
-  removeEntity,
-  removeEntityResolved,
+  deleteEntity,
+  deleteEntityResolved,
   updateEntity,
   updateEntityResolved,
 } from './entity.actions';
@@ -129,13 +129,13 @@ export abstract class EntityEffects<T extends Entity, Enum extends string> {
   );
 
   removeEntity = this.createDefaultEffect(
-    removeEntity(this.entitySlice),
+    deleteEntity(this.entitySlice),
     ({ entityId }) => this.repo.DeleteEntityById(entityId),
     {
       valueMapper: ({ entityId, result }) => ({
         entityId,
       }),
-      action: removeEntityResolved(this.entitySlice),
+      action: deleteEntityResolved(this.entitySlice),
     }
   );
 }

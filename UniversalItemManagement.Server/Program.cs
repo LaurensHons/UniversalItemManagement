@@ -1,6 +1,10 @@
 using Microsoft.EntityFrameworkCore;
 using UniversalItemManagement.EF;
 using UniversalItemManagement.EF.Domain.Infrastructure;
+using UniversalItemManagement.Server;
+using UniversalItemManagement.Server.Services.Contracts;
+using UniversalItemManagement.Server.Services;
+using UniversalItemManagement.Server.Services.BackGroundTasks;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,7 +14,19 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
 builder.Services.AddEntityFramework();
+builder.Services.AddServices();
+builder.Services.AddHostedService<QueuedHostedService>();
+builder.Services.AddSingleton<IBackgroundTaskQueue>(_ =>
+{
+    if (!int.TryParse(builder.Configuration["QueueCapacity"], out var queueCapacity))
+    {
+        queueCapacity = 100;
+    }
+
+    return new DefaultBackgroundTaskQueue(queueCapacity);
+});
 
 builder.Services.AddCors(options =>
 {
@@ -21,10 +37,12 @@ builder.Services.AddCors(options =>
 });
 
 
+
 var app = builder.Build();
 
 app.UseDefaultFiles();
 app.UseStaticFiles();
+app.UseWebSockets();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -33,7 +51,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-
+app.BuildEndpoints();
 
 app.UseHttpsRedirection();
 

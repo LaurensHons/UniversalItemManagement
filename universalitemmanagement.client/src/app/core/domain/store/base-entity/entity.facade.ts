@@ -10,7 +10,7 @@ import {
   addEntity,
   getEntities,
   getEntity,
-  removeEntity,
+  deleteEntity,
   updateEntity,
 } from './entity.actions';
 import { EntityState } from './entity.reducer';
@@ -89,7 +89,7 @@ export abstract class EntityFacade<T extends Entity, Enum extends string> {
   }
 
   removeEntity(entitySlice: Enum, entityId: string) {
-    return this.dispatchAction$(removeEntity(entitySlice.toString()), {
+    return this.dispatchAction$(deleteEntity(entitySlice.toString()), {
       entityId,
     });
   }
