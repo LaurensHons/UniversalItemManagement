@@ -28,7 +28,7 @@
     <PackageJsonDependenciesNgrxStore Condition="$(PackageJsonDependenciesNgrxStore) == ''">^15.0.0</PackageJsonDependenciesNgrxStore>
     <PackageJsonDependenciesNgrxStoreDevtools Condition="$(PackageJsonDependenciesNgrxStoreDevtools) == ''">^15.0.0</PackageJsonDependenciesNgrxStoreDevtools>
     <PackageJsonDependenciesPopperjsCore Condition="$(PackageJsonDependenciesPopperjsCore) == ''">^2.11.6</PackageJsonDependenciesPopperjsCore>
-    <PackageJsonDependenciesTypesUuid Condition="$(PackageJsonDependenciesTypesUuid) == ''">^8.3.4</PackageJsonDependenciesTypesUuid>
+    <PackageJsonDependenciesTypesUuid Condition="$(PackageJsonDependenciesTypesUuid) == ''">^9.0.0</PackageJsonDependenciesTypesUuid>
     <PackageJsonDependenciesBootstrap Condition="$(PackageJsonDependenciesBootstrap) == ''">^5.2.3</PackageJsonDependenciesBootstrap>
     <PackageJsonDependenciesJestEditorSupport Condition="$(PackageJsonDependenciesJestEditorSupport) == ''">*</PackageJsonDependenciesJestEditorSupport>
     <PackageJsonDependenciesQueueMicrotask Condition="$(PackageJsonDependenciesQueueMicrotask) == ''">^1.2.3</PackageJsonDependenciesQueueMicrotask>
@@ -36,6 +36,7 @@
     <PackageJsonDependenciesRunScriptOs Condition="$(PackageJsonDependenciesRunScriptOs) == ''">*</PackageJsonDependenciesRunScriptOs>
     <PackageJsonDependenciesRxjs Condition="$(PackageJsonDependenciesRxjs) == ''">~7.8.0</PackageJsonDependenciesRxjs>
     <PackageJsonDependenciesTslib Condition="$(PackageJsonDependenciesTslib) == ''">^2.3.0</PackageJsonDependenciesTslib>
+    <PackageJsonDependenciesUuid Condition="$(PackageJsonDependenciesUuid) == ''">^9.0.1</PackageJsonDependenciesUuid>
     <PackageJsonDependenciesZoneJs Condition="$(PackageJsonDependenciesZoneJs) == ''">~0.12.0</PackageJsonDependenciesZoneJs>
     <PackageJsonDevdependenciesAngularDevkitBuildAngular Condition="$(PackageJsonDevdependenciesAngularDevkitBuildAngular) == ''">^15.2.7</PackageJsonDevdependenciesAngularDevkitBuildAngular>
     <PackageJsonDevdependenciesAngularCli Condition="$(PackageJsonDevdependenciesAngularCli) == ''">~15.2.7</PackageJsonDevdependenciesAngularCli>

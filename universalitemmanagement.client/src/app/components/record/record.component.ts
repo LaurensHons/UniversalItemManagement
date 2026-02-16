@@ -12,19 +12,24 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import {
-  RecordFacade,
-  RecordEntities,
-} from 'src/app/core/domain/store/record/record.state';
+import { RecordFacade } from 'src/app/core/domain/store/record/record.state';
 import {
   BehaviorSubject,
   filter,
   forkJoin,
   map,
+  Observable,
+  of,
   Subject,
   switchMap,
+  tap,
 } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
+import { FieldGridComponent } from '../field-grid/field-grid.component';
+import { FieldPropertyFacade } from 'src/app/core/domain/store/fields/field-property.state';
+import { FieldProperty } from 'src/app/core/models/field-property.model';
+import { FieldFacade } from 'src/app/core/domain/store/fields/field.state';
+import { Field } from 'src/app/core/models/field.model';
 
 @Component({
   selector: 'app-record',
@@ -37,6 +42,7 @@ import { ActivatedRoute } from '@angular/router';
     MatInputModule,
     MatButtonModule,
     MatIconModule,
+    FieldGridComponent,
   ],
   templateUrl: './record.component.html',
   styleUrls: ['./record.component.scss'],
@@ -46,6 +52,7 @@ export class RecordComponent {
   form!: FormGroup;
 
   record?: Record;
+  fieldPropertiesMap = new Map<string, FieldProperty>();
 
   @Input()
   set id(id: string) {
@@ -54,7 +61,9 @@ export class RecordComponent {
 
   constructor(
     private recordService: RecordFacade,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private fieldPropertyFacade: FieldPropertyFacade,
+    private fieldFacade: FieldFacade
   ) {}
 
   ngOnInit(): void {
@@ -63,20 +72,82 @@ export class RecordComponent {
       name: new FormControl('', [Validators.required]),
       description: new FormControl(''),
     });
+
     this.route.paramMap
       .pipe(
         map((p) => p.get('id')),
         filter((v) => !!v),
-        switchMap((v) => this.recordService.entity$(RecordEntities.Record, v!))
+        switchMap((v) => this.recordService.entity$(v!)),
+        tap((record) => {
+          this.record = record;
+          this.form.setValue({
+            id: record.id,
+            name: record.name,
+            description: record.description,
+          });
+        }),
+        switchMap((record) => this.loadFieldPropertiesForRecord(record))
       )
-      .subscribe((record) => {
-        this.record = record;
-        this.form.setValue({
-          id: record.id,
-          name: record.name,
-          description: record.description,
-        });
-      });
+      .subscribe();
+  }
+
+  loadFieldPropertiesForRecord(record: Record): Observable<FieldProperty[]> {
+    // Extract unique property IDs from the record's fields
+    const uniquePropertyIds = [...new Set(record.fields.map((field) => field.propertyId))];
+
+    // If no fields, return empty observable
+    if (uniquePropertyIds.length === 0) {
+      this.fieldPropertiesMap.clear();
+      return of([]);
+    }
+
+    // First, try to get properties from the state
+    return this.fieldPropertyFacade.entities$().pipe(
+      switchMap((propertiesInState) => {
+        // Check which properties are already in state
+        const propertiesInStateMap = new Map<string, FieldProperty>(
+          propertiesInState.map((p) => [p.id, p])
+        );
+
+        const missingPropertyIds = uniquePropertyIds.filter(
+          (id) => !propertiesInStateMap.has(id)
+        );
+
+        // If all properties are in state, use them
+        if (missingPropertyIds.length === 0) {
+          const properties = uniquePropertyIds.map((id) => propertiesInStateMap.get(id)!);
+          this.fieldPropertiesMap.clear();
+          properties.forEach((property) => {
+            this.fieldPropertiesMap.set(property.id, property);
+          });
+          return of(properties);
+        }
+
+        // Otherwise, fetch missing properties from backend
+        const propertyRequests = missingPropertyIds.map((propertyId) =>
+          this.fieldPropertyFacade.getEntity(propertyId)
+        );
+
+        return forkJoin(propertyRequests).pipe(
+          map((fetchedProperties) => {
+            // Combine properties from state and newly fetched
+            const allProperties = [
+              ...uniquePropertyIds
+                .filter((id) => propertiesInStateMap.has(id))
+                .map((id) => propertiesInStateMap.get(id)!),
+              ...fetchedProperties,
+            ];
+
+            this.fieldPropertiesMap.clear();
+            allProperties.forEach((property) => {
+              this.fieldPropertiesMap.set(property.id, property);
+            });
+
+            return allProperties;
+          })
+        );
+      })
+    );
   }
 
   saveRecord() {
@@ -84,9 +155,28 @@ export class RecordComponent {
     if (this.form.invalid) return;
     const record = new Record(this.form.value);
     this.recordService
-      .updateEntity(RecordEntities.Record, record)
+      .updateEntity(record)
       .subscribe((record) => {
         this.form.reset();
       });
+  }
+
+  onFieldAdded(event: { propertyId: string; x: number; y: number; width: number; height: number }): void {
+    if (!this.record) return;
+
+    const newField = new Field({
+      x: event.x,
+      y: event.y,
+      width: event.width,
+      height: event.height,
+      propertyId: event.propertyId,
+      recordId: this.record.id,
+    } as Field);
+
+    console.log(newField)
+
+    this.fieldFacade.addEntity(newField).subscribe((createdField: Field) => {
+      console.log('Field created successfully:', createdField);
+    });
   }
 }

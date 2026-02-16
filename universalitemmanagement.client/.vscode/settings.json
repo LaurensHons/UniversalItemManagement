@@ -1,0 +1,18 @@
+{
+  "claudeCode.disableLoginPrompt": true,
+  "claudeCode.environmentVariables": [
+
+    {
+      "name": "ANTHROPIC_BASE_URL",
+      "value": "https://api-v2.bonzai.iodigital.com"
+    },
+    {
+      "name": "ANTHROPIC_AUTH_TOKEN",
+      "value": "sk-91vQEP93lAihDp6R_nQ0Zg"
+    },
+    {
+      "name": "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC",
+      "value": "1"
+    }
+  ]
+}

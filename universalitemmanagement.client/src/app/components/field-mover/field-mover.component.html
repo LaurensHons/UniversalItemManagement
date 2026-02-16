@@ -1,0 +1,104 @@
+<div class="field-mover-container">
+  <mat-card class="controls-card">
+    <mat-card-header>
+      <mat-card-title>Field Layout Designer</mat-card-title>
+      <mat-card-subtitle>Drag fields to reposition them on the canvas</mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      <div class="toolbar">
+        <button mat-raised-button color="primary" (click)="saveLayout()">
+          <mat-icon>save</mat-icon>
+          Save Layout
+        </button>
+        <button mat-raised-button (click)="resetPositions()">
+          <mat-icon>refresh</mat-icon>
+          Reset Positions
+        </button>
+
+        <div class="grid-size-control">
+          <mat-form-field appearance="outline">
+            <mat-label>Grid Snap Size</mat-label>
+            <input matInput type="number" [(ngModel)]="gridSize" min="1" max="50" />
+          </mat-form-field>
+        </div>
+      </div>
+
+      <div class="canvas-wrapper">
+        <div
+          class="canvas"
+          [style.width.px]="canvasWidth"
+          [style.height.px]="canvasHeight"
+          cdkDropListGroup
+        >
+          <div class="grid-background"></div>
+
+          <div
+            *ngFor="let fieldPos of fieldPositions"
+            class="field-item"
+            cdkDrag
+            [cdkDragFreeDragPosition]="{ x: 0, y: 0 }"
+            (cdkDragEnded)="onDragEnded($event, fieldPos)"
+            (click)="selectField(fieldPos)"
+            [ngStyle]="getFieldStyle(fieldPos)"
+          >
+            <div class="field-content">
+              <div class="field-header">
+                <mat-icon class="drag-handle" cdkDragHandle>drag_indicator</mat-icon>
+                <span class="field-id">Field: {{ fieldPos.field.id?.substring(0, 8) }}</span>
+              </div>
+              <div class="field-coordinates">
+                <small>X: {{ fieldPos.x }}, Y: {{ fieldPos.y }}</small>
+              </div>
+              <div class="field-dimensions">
+                <small>{{ fieldPos.width }}×{{ fieldPos.height }}</small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="properties-panel" *ngIf="selectedField">
+        <h3>Selected Field Properties</h3>
+        <div class="property-grid">
+          <mat-form-field appearance="outline">
+            <mat-label>X Position</mat-label>
+            <input matInput type="number" [(ngModel)]="selectedField.x" readonly />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Y Position</mat-label>
+            <input matInput type="number" [(ngModel)]="selectedField.y" readonly />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Width</mat-label>
+            <input
+              matInput
+              type="number"
+              [(ngModel)]="selectedField.width"
+              (ngModelChange)="updateFieldSize()"
+              min="50"
+            />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Height</mat-label>
+            <input
+              matInput
+              type="number"
+              [(ngModel)]="selectedField.height"
+              (ngModelChange)="updateFieldSize()"
+              min="30"
+            />
+          </mat-form-field>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <div class="info-message" *ngIf="fieldPositions.length === 0">
+    <mat-icon>info</mat-icon>
+    <p>No fields available. Add fields to a record to use the layout designer.</p>
+  </div>
+</div>

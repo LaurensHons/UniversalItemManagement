@@ -6,7 +6,13 @@
   <mat-form-field appearance="outline" class="no-subscript-wrapper">
     <input matInput placeholder="Description" formControlName="description" />
   </mat-form-field>
-  <button mat-stroked-button (click)="saveRecord()">
-    <mat-icon>save</mat-icon>
-  </button>
+  <div class="button-group">
+    <button mat-stroked-button (click)="saveRecord()">
+      <mat-icon>save</mat-icon>
+    </button>
+    <button mat-stroked-button color="accent" (click)="navigateToPropertyCreator()">
+      <mat-icon>settings</mat-icon>
+      Create Properties
+    </button>
+  </div>
 </div>

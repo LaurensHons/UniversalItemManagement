@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 import {
   FormControl,
   FormGroup,
@@ -31,7 +32,10 @@ import { Record } from 'src/app/core/models/record.model';
   styleUrls: ['./new-record.component.scss'],
 })
 export class NewRecordComponent {
-  constructor(private recordService: RecordFacade) {}
+  constructor(
+    private recordService: RecordFacade,
+    private router: Router
+  ) {}
   form!: FormGroup;
 
   ngOnInit(): void {
@@ -44,10 +48,14 @@ export class NewRecordComponent {
   saveRecord() {
     let record = new Record({ ...this.form.value });
     this.recordService
-      .addEntity(RecordEntities.Record, record)
+      .addEntity(record)
       .subscribe(() => {
         this.form.reset();
       });
+  }
+
+  navigateToPropertyCreator(): void {
+    this.router.navigate(['/property-creator']);
   }
 
   ngOnDestroy(): void {

@@ -2,19 +2,13 @@ import { Injectable, isDevMode } from '@angular/core';
 import { first, Observable } from 'rxjs';
 import { HubConnection, HubConnectionBuilder } from '@microsoft/signalr';
 import * as signalR from '@microsoft/signalr';
-import { Entity } from '../../../models/entity';
 import { CoreFeature } from '../core.feature';
-import { ActionCreator, Store } from '@ngrx/store';
-import { Action, TypedAction } from '@ngrx/store/src/models';
+import { Action, ActionCreator, Store } from '@ngrx/store';
+import { environment } from 'src/environments/environment';
+import { TypedAction } from '@ngrx/store/src/models';
+import { Entity } from 'src/app/core/models/entity';
 import { ActionBase } from '../base/action-base.interface';
-import { act } from '@ngrx/effects';
-import {
-  addEntitiesResolved,
-  addEntityResolved,
-  deleteEntitiesResolved,
-  updateEntitiesResolved,
-} from '../base-entity/entity.actions';
-import { GetLocalOrigin } from '../../../services/entity.service';
+import { addEntitiesResolved, updateEntitiesResolved, deleteEntitiesResolved } from '../base/entity.actions';
 
 export enum OperationType {
   ADD = 'AddEntities',
@@ -32,7 +26,7 @@ export class SignalRService {
 
   initConnection() {
     let builder = new HubConnectionBuilder()
-      .withUrl(GetLocalOrigin() + '/Hub', {
+      .withUrl(environment.hubUrl, {
         transport: signalR.HttpTransportType.WebSockets,
       })
       .configureLogging(signalR.LogLevel.Information)

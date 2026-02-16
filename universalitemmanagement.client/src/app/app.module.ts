@@ -15,11 +15,11 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { CoreStateModule } from './core/domain/core.state.module';
 import { StoreModule } from '@ngrx/store';
 import { EffectsModule } from '@ngrx/effects';
-import { ENITTY_REDUCER_FACTORY } from './core/domain/store/base-entity/entity.reducer';
+import { ENITTY_REDUCER_FACTORY } from './core/domain/store/base/entity.reducer';
 import { BehaviorSubject } from 'rxjs';
 import { provideRouter } from '@angular/router';
 import { routes } from './core/app.routes';
-import { ConnectionIdMiddleware } from './core/domain/store/signals/connectionId.middleware';
+import { ConnectionIdMiddleware } from './core/domain/signals/connectionId.middleware';
 
 @NgModule({
   declarations: [AppComponent],

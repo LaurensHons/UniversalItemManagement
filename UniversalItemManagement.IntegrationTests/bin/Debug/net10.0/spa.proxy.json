@@ -1,0 +1,10 @@
+{
+"SpaProxyServer": {
+"ServerUrl": "https://localhost:63820",
+"RedirectUrl": "",
+"LaunchCommand": "npm start",
+"WorkingDirectory": "C:\\Users\\laure\\source\\repos\\UniversalItemManagement\\UniversalItemManagement.Server\\..\\universalitemmanagement.client",
+"MaxTimeoutInSeconds": "120",
+"KeepRunning": "false"
+}
+}

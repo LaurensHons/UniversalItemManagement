@@ -56,7 +56,7 @@ export class RecordListComponent {
   ngOnInit(): void {
     this.recordService.getEntities(RecordEntities.Record).subscribe();
     this.recordService
-      .entities$<Record>(RecordEntities.Record)
+      .entities$(RecordEntities.Record)
       .subscribe((records) => {
         this.records = records;
       });

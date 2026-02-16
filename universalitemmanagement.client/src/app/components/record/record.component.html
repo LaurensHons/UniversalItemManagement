@@ -1,16 +1,32 @@
-<p>record works!</p>
+<div class="record-container">
+  <div class="record-header">
+    <h2>{{ record?.name }}</h2>
+    <p class="description">{{ record?.description }}</p>
+  </div>
 
-<p>Name: {{ record?.name }}</p>
-<p>Description: {{ record?.description }}</p>
+  <div class="record-form" [formGroup]="form">
+    <mat-form-field appearance="outline" class="no-subscript-wrapper">
+      <mat-label>Name</mat-label>
+      <input matInput placeholder="Name" formControlName="name" />
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="no-subscript-wrapper">
+      <mat-label>Description</mat-label>
+      <input matInput placeholder="Description" formControlName="description" />
+    </mat-form-field>
+    <button mat-stroked-button (click)="saveRecord()">
+      <mat-icon>save</mat-icon>
+      Save Record
+    </button>
+  </div>
 
-<div [formGroup]="form">
-  <mat-form-field appearance="outline" class="no-subscript-wrapper">
-    <input matInput placeholder="Name" formControlName="name" />
-  </mat-form-field>
-  <mat-form-field appearance="outline" class="no-subscript-wrapper">
-    <input matInput placeholder="Description" formControlName="description" />
-  </mat-form-field>
-  <button mat-stroked-button (click)="saveRecord()">
-    <mat-icon>save</mat-icon>
-  </button>
+  <div class="fields-section">
+    <h3>Fields</h3>
+    <app-field-grid
+      [fields]="record?.fields ?? []"
+      [fieldProperties]="fieldPropertiesMap"
+      (fieldAdded)="onFieldAdded($event)">
+    </app-field-grid>
+  </div>
+
+
 </div>

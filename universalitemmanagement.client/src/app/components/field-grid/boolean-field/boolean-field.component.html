@@ -1,0 +1,8 @@
+<div class="boolean-field-container">
+  <mat-checkbox
+    [formControl]="booleanControl"
+    (change)="onValueChange()"
+  >
+    {{ property.name }}
+  </mat-checkbox>
+</div>

@@ -1,0 +1,96 @@
+<div class="property-creator-container">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>Create Field Properties</mat-card-title>
+      <mat-card-subtitle>Define field types that can be used in records</mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      <form [formGroup]="form" (ngSubmit)="createProperty()">
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Property Name</mat-label>
+            <input
+              matInput
+              formControlName="name"
+              placeholder="Enter property name (e.g., 'Email', 'Birth Date')"
+            />
+            <mat-error *ngIf="form.get('name')?.hasError('required')">
+              Name is required
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Field Type</mat-label>
+            <mat-select formControlName="type">
+              <mat-option *ngFor="let type of propertyTypes" [value]="type">
+                {{ type }}
+              </mat-option>
+            </mat-select>
+            <mat-error *ngIf="form.get('type')?.hasError('required')">
+              Type is required
+            </mat-error>
+          </mat-form-field>
+
+          <button
+            mat-raised-button
+            color="primary"
+            type="submit"
+            class="add-button"
+          >
+            <mat-icon>add</mat-icon>
+            Add Property
+          </button>
+        </div>
+      </form>
+
+      <div class="properties-list" *ngIf="properties.length > 0">
+        <h3>Created Properties</h3>
+        <table mat-table [dataSource]="properties" class="properties-table">
+          <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef>Name</th>
+            <td mat-cell *matCellDef="let property">{{ property.name }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="type">
+            <th mat-header-cell *matHeaderCellDef>Type</th>
+            <td mat-cell *matCellDef="let property">
+              <span class="type-badge" [class]="'type-' + property.type.toLowerCase()">
+                {{ property.type }}
+              </span>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Actions</th>
+            <td mat-cell *matCellDef="let property">
+              <button
+                mat-icon-button
+                color="warn"
+                (click)="deleteProperty(property)"
+                aria-label="Delete property"
+              >
+                <mat-icon>delete</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+        </table>
+      </div>
+    </mat-card-content>
+
+    <mat-card-actions *ngIf="properties.length > 0">
+      <button
+        mat-raised-button
+        color="accent"
+        (click)="saveProperties()"
+        class="save-all-button"
+      >
+        <mat-icon>save</mat-icon>
+        Save All Properties
+      </button>
+    </mat-card-actions>
+  </mat-card>
+</div>

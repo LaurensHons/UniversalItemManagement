@@ -1,0 +1,87 @@
+<div class="field-grid-container">
+  <div class="lock-button-container">
+    <button
+      mat-icon-button
+      (click)="toggleLock()"
+      [matTooltip]="isLocked ? 'Unlock grid editor' : 'Lock grid editor'"
+      class="lock-button"
+      [class.unlocked]="!isLocked"
+    >
+      <mat-icon>{{ isLocked ? 'lock' : 'lock_open' }}</mat-icon>
+    </button>
+  </div>
+
+  <div class="field-grid-layout">
+    <!-- Sidebar with draggable field types -->
+    <div class="field-sidebar" *ngIf="!isLocked">
+      <div class="sidebar-header">
+        <mat-icon>add_circle_outline</mat-icon>
+        <h3>Add Fields</h3>
+      </div>
+      <div class="field-type-list">
+        <button
+          *ngFor="let option of fieldTypeOptions; trackBy: trackByFieldType"
+          mat-stroked-button
+          class="field-type-button"
+          draggable="true"
+          (dragstart)="onDragStart(option, $event)"
+          (dragend)="onDragEnd()"
+          [matTooltip]="'Drag to add ' + option.label"
+        >
+          <mat-icon>{{ option.icon }}</mat-icon>
+          <span>{{ option.label }}</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Main grid area -->
+    <div
+      class="field-grid"
+      [class.editable]="!isLocked"
+      (dragover)="onDragOver($event)"
+      (drop)="onDrop($event)"
+    >
+      <div
+        *ngFor="let field of fields; trackBy: trackByFieldId"
+        class="field-item"
+        [class.editable]="!isLocked"
+        [style.grid-column]="field.x + ' / span ' + field.width"
+        [style.grid-row]="field.y + ' / span ' + field.height"
+      >
+        <div class="field-handle" *ngIf="!isLocked">
+          <mat-icon>drag_indicator</mat-icon>
+        </div>
+
+        <ng-container [ngSwitch]="getFieldProperty(field)?.type">
+          <app-text-field
+            *ngSwitchCase="FieldPropertyType.Text"
+            [field]="field"
+            [property]="getFieldProperty(field)!">
+          </app-text-field>
+
+          <app-date-field
+            *ngSwitchCase="FieldPropertyType.Date"
+            [field]="field"
+            [property]="getFieldProperty(field)!">
+          </app-date-field>
+
+          <app-boolean-field
+            *ngSwitchCase="FieldPropertyType.Boolean"
+            [field]="field"
+            [property]="getFieldProperty(field)!">
+          </app-boolean-field>
+
+          <div *ngSwitchDefault class="unknown-field">Unknown field type</div>
+        </ng-container>
+
+        <div class="field-resize-handle" *ngIf="!isLocked"></div>
+      </div>
+
+      <!-- Drop zone indicator -->
+      <div class="drop-zone-indicator" *ngIf="!isLocked && draggedFieldType">
+        <mat-icon>add_box</mat-icon>
+        <p>Drop here to add field</p>
+      </div>
+    </div>
+  </div>
+</div>

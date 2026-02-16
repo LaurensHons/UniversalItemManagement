@@ -1,0 +1,9 @@
+<mat-form-field appearance="outline" class="full-width">
+  <mat-label>{{ property.name }}</mat-label>
+  <input
+    matInput
+    [formControl]="textControl"
+    (blur)="onValueChange()"
+    placeholder="Enter {{ property.name }}"
+  />
+</mat-form-field>

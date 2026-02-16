@@ -1,1 +1,2 @@
 E:\Projects\UniversalItemManagement\universalitemmanagement.client\obj\Debug\universalitemmanagement.client.esproj.CoreCompileInputs.cache
+C:\Users\laure\source\repos\UniversalItemManagement\universalitemmanagement.client\obj\Debug\Universalitemmanagement.client.esproj.CoreCompileInputs.cache

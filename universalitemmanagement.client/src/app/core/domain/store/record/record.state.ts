@@ -3,9 +3,9 @@ import { Actions, EffectSources } from '@ngrx/effects';
 import { Action, Store } from '@ngrx/store';
 import { Record } from 'src/app/core/models/record.model';
 import { RecordService } from 'src/app/core/services/entity.services';
-import { EntityEffects } from '../base-entity/entity.effects';
-import { EntityFacade } from '../base-entity/entity.facade';
-import { entitiesReducer, EntityState } from '../base-entity/entity.reducer';
+import { EntityEffects } from '../base/entity.effects';
+import { EntityFacade } from '../base/entity.facade';
+import { entitiesReducer, EntityState } from '../base/entity.reducer';
 import { CoreFeature } from '../core.feature';
 
 export const RecordFeatureKey = 'RecordFeature';
@@ -36,6 +36,6 @@ export class RecordEntityEffects extends EntityEffects<Record, RecordEntities> {
 })
 export class RecordFacade extends EntityFacade<Record, RecordEntities> {
   constructor(_store: Store<CoreFeature>) {
-    super(_store, RecordFeatureKey);
+    super(_store, RecordFeatureKey, RecordEntities.Record);
   }
 }
