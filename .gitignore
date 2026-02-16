@@ -42,8 +42,8 @@ testem.log
 .DS_Store
 Thumbs.db
 
-UniversalItemManagement.Server/bin
-UniversalItemManagement.Server/obj
-UniversalItemManagement.EF/bin
-UniversalItemManagement.EF/obj
+UniversalItemManagement.Server/bin/
+UniversalItemManagement.Server/obj/
+UniversalItemManagement.EF/bin/
+UniversalItemManagement.EF/obj/
 

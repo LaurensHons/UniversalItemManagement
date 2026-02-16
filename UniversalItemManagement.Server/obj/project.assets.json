@@ -643,7 +643,7 @@
           }
         }
       },
-      "Microsoft.AspNetCore.SpaProxy/8.0.13": {
+      "Microsoft.AspNetCore.SpaProxy/8.0.24": {
         "type": "package",
         "compile": {
           "lib/net8.0/Microsoft.AspNetCore.SpaProxy.dll": {}
@@ -3549,10 +3549,10 @@
         "microsoft.aspnetcore.signalr.protocols.json.nuspec"
       ]
     },
-    "Microsoft.AspNetCore.SpaProxy/8.0.13": {
-      "sha512": "MwrXZfC53RySu6fnXeL6+l8JaiuHs1c3oruvs1ZzKCKH6vJ4MR0zLuGETb37kiS9wzIVXQCtqgR5Bsf5Dzm1+Q==",
+    "Microsoft.AspNetCore.SpaProxy/8.0.24": {
+      "sha512": "Rp0r2Ie9zd8k+TYV10TYDGxu+fLoQoOtd8lRyRvaM/SK2BqqtG0k5JewmUJsYXu6jy5mXc9vuNydQb5AjFrz1g==",
       "type": "package",
-      "path": "microsoft.aspnetcore.spaproxy/8.0.13",
+      "path": "microsoft.aspnetcore.spaproxy/8.0.24",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
@@ -3560,7 +3560,7 @@
         "THIRD-PARTY-NOTICES.TXT",
         "build/Microsoft.AspNetCore.SpaProxy.targets",
         "lib/net8.0/Microsoft.AspNetCore.SpaProxy.dll",
-        "microsoft.aspnetcore.spaproxy.8.0.13.nupkg.sha512",
+        "microsoft.aspnetcore.spaproxy.8.0.24.nupkg.sha512",
         "microsoft.aspnetcore.spaproxy.nuspec"
       ]
     },
@@ -7038,23 +7038,23 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\Laurens\\.nuget\\packages\\": {},
+    "C:\\Users\\laure\\.nuget\\packages\\": {},
     "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "E:\\Projects\\UniversalItemManagement\\UniversalItemManagement.Server\\UniversalItemManagement.Server.csproj",
+      "projectUniqueName": "C:\\Users\\laure\\source\\repos\\UniversalItemManagement\\UniversalItemManagement.Server\\UniversalItemManagement.Server.csproj",
       "projectName": "UniversalItemManagement.Server",
-      "projectPath": "E:\\Projects\\UniversalItemManagement\\UniversalItemManagement.Server\\UniversalItemManagement.Server.csproj",
-      "packagesPath": "C:\\Users\\Laurens\\.nuget\\packages\\",
-      "outputPath": "E:\\Projects\\UniversalItemManagement\\UniversalItemManagement.Server\\obj\\",
+      "projectPath": "C:\\Users\\laure\\source\\repos\\UniversalItemManagement\\UniversalItemManagement.Server\\UniversalItemManagement.Server.csproj",
+      "packagesPath": "C:\\Users\\laure\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\laure\\source\\repos\\UniversalItemManagement\\UniversalItemManagement.Server\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
       ],
       "configFilePaths": [
-        "C:\\Users\\Laurens\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\laure\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
@@ -7063,15 +7063,14 @@
       ],
       "sources": {
         "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-        "https://api.nuget.org/v3/index.json": {},
-        "https://pkgs.dev.azure.com/ProcessDelight/Angular_components/_packaging/processdelight_nuget_feed/nuget/v3/index.json": {}
+        "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
         "net8.0": {
           "targetAlias": "net8.0",
           "projectReferences": {
-            "E:\\Projects\\UniversalItemManagement\\UniversalItemManagement.EF\\UniversalItemManagement.EF.csproj": {
-              "projectPath": "E:\\Projects\\UniversalItemManagement\\UniversalItemManagement.EF\\UniversalItemManagement.EF.csproj"
+            "C:\\Users\\laure\\source\\repos\\UniversalItemManagement\\UniversalItemManagement.EF\\UniversalItemManagement.EF.csproj": {
+              "projectPath": "C:\\Users\\laure\\source\\repos\\UniversalItemManagement\\UniversalItemManagement.EF\\UniversalItemManagement.EF.csproj"
             }
           }
         }
@@ -7086,7 +7085,7 @@
         "auditLevel": "low",
         "auditMode": "direct"
       },
-      "SdkAnalysisLevel": "9.0.100"
+      "SdkAnalysisLevel": "10.0.100"
     },
     "frameworks": {
       "net8.0": {
@@ -7142,6 +7141,24 @@
         ],
         "assetTargetFallback": true,
         "warn": true,
+        "downloadDependencies": [
+          {
+            "name": "Microsoft.AspNetCore.App.Ref",
+            "version": "[8.0.24, 8.0.24]"
+          },
+          {
+            "name": "Microsoft.NETCore.App.Host.win-x64",
+            "version": "[8.0.24, 8.0.24]"
+          },
+          {
+            "name": "Microsoft.NETCore.App.Ref",
+            "version": "[8.0.24, 8.0.24]"
+          },
+          {
+            "name": "Microsoft.WindowsDesktop.App.Ref",
+            "version": "[8.0.24, 8.0.24]"
+          }
+        ],
         "frameworkReferences": {
           "Microsoft.AspNetCore.App": {
             "privateAssets": "none"
@@ -7150,7 +7167,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.101/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.103/PortableRuntimeIdentifierGraph.json"
       }
     }
   }

@@ -7,7 +7,9 @@ namespace UniversalItemManagement.Server.Hubs
 {
     public enum HubEnum
     {
-        Record
+        Record,
+        Field,
+        FieldProperty,
     }
     public interface IClient
     {

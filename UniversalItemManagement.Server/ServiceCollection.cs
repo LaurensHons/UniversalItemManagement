@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
 using UniversalItemManagement.EF.Domain.Models.Entities;
+using UniversalItemManagement.EF.Domain.Models.Entities.Fields;
 using UniversalItemManagement.EF.Domain.Services.Contracts;
 using UniversalItemManagement.Server.Hubs;
 using UniversalItemManagement.Server.Middleware;
@@ -25,6 +26,20 @@ namespace UniversalItemManagement.Server
                     new EntityUpdatedService<Record>(
                         provider,
                         HubEnum.Record
+                    )
+                );
+            services.AddTransient<IEntityService<Field>, EntityUpdatedService<Field>>(
+                (provider) =>
+                    new EntityUpdatedService<Field>(
+                        provider,
+                        HubEnum.Field
+                    )
+                );
+            services.AddTransient<IEntityService<FieldProperty>, EntityUpdatedService<FieldProperty>>(
+                (provider) =>
+                    new EntityUpdatedService<FieldProperty>(
+                        provider,
+                        HubEnum.FieldProperty
                     )
                 );
 

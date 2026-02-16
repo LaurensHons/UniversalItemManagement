@@ -3,7 +3,7 @@
 "ServerUrl": "https://localhost:63820",
 "RedirectUrl": "",
 "LaunchCommand": "npm start",
-"WorkingDirectory": "E:\\Projects\\UniversalItemManagement\\UniversalItemManagement.Server\\..\\universalitemmanagement.client",
+"WorkingDirectory": "C:\\Users\\laure\\source\\repos\\UniversalItemManagement\\UniversalItemManagement.Server\\..\\universalitemmanagement.client",
 "MaxTimeoutInSeconds": "120",
 "KeepRunning": "false"
 }

@@ -2,7 +2,7 @@
   "$schema": "http://json.schemastore.org/launchsettings.json",
   "iisSettings": {
     "windowsAuthentication": false,
-    "anonymousAuthentication": true,
+    "anonymousAuthentication": false,
     "iisExpress": {
       "applicationUrl": "http://localhost:43673",
       "sslPort": 44306
@@ -13,12 +13,11 @@
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,
-      "launchUrl": "swagger",
       "applicationUrl": "http://localhost:5232",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "ASPNETCORE_HOSTINGSTARTUPASSEMBLIES": "Microsoft.AspNetCore.SpaProxy",
-        "DB_CONNECTION_STRING": "Server=192.168.0.126;Database=model;User Id=SA;Password=DFkop5sdf1;TrustServerCertificate=True;"
+        "DB_CONNECTION_STRING": "Server=192.168.1.126;Database=universalitemmanager;User Id=casaos;Password=casaos;TrustServerCertificate=True;"
       }
     },
     "https": {

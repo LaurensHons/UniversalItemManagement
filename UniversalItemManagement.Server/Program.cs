@@ -7,12 +7,18 @@ using UniversalItemManagement.Server.Services;
 using UniversalItemManagement.Server.Services.BackGroundTasks;
 using UniversalItemManagement.Server.Middleware;
 using UniversalItemManagement.Server.Hubs;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+        options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+    });
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -34,7 +40,13 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy(name: "FrontEndUI", policy =>
     {
-        policy.WithOrigins("https://localhost:63820").AllowAnyMethod().AllowAnyHeader().AllowCredentials();
+        policy.WithOrigins(
+            "https://127.0.0.1:63820", 
+            "https://localhost:63820",
+            "http://localhost:5232")
+        .AllowAnyMethod()
+        .AllowAnyHeader()
+        .AllowCredentials();
     });
 });
 
@@ -64,15 +76,13 @@ app.Use(async (context, next) =>
 });
 
 app.BuildApplication();
-
 app.UseHttpsRedirection();
-
 app.UseAuthorization();
-
-app.MapControllers();
-
 app.UseCors("FrontEndUI");
-
+app.MapControllers();
 app.MapFallbackToFile("/index.html");
 
 app.Run();
+
+// Make the implicit Program class public so integration tests can reference it
+public partial class Program { }
