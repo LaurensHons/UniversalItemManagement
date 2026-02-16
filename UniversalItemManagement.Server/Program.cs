@@ -23,7 +23,11 @@ builder.Services.AddControllers()
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddEntityFramework();
+// Don't register Entity Framework in test environment - tests will configure their own database
+if (builder.Environment.EnvironmentName != "Testing")
+{
+    builder.Services.AddEntityFramework();
+}
 builder.Services.AddServices();
 builder.Services.AddHostedService<QueuedHostedService>();
 builder.Services.AddSingleton<IBackgroundTaskQueue>(_ =>
@@ -85,4 +89,7 @@ app.MapFallbackToFile("/index.html");
 app.Run();
 
 // Make the implicit Program class public so integration tests can reference it
-public partial class Program { }
+public partial class Program
+{
+
+}
