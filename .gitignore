@@ -46,4 +46,6 @@ UniversalItemManagement.Server/bin/
 UniversalItemManagement.Server/obj/
 UniversalItemManagement.EF/bin/
 UniversalItemManagement.EF/obj/
+UniversalItemManagement.IntegrationTests/bin/
+UniversalItemManagement.IntegrationTests/obj/
 

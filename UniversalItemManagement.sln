@@ -8,7 +8,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UniversalItemManagement.Ser
 		{185F93DC-7C6E-4EF7-9E0E-5883CDD77F7B} = {185F93DC-7C6E-4EF7-9E0E-5883CDD77F7B}
 	EndProjectSection
 EndProject
-Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "Universalitemmanagement.client", "universalitemmanagement.client\Universalitemmanagement.client.esproj", "{B8B51963-DA8C-4707-B5BA-D1E2B0675E16}"
+Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "universalitemmanagement.client", "universalitemmanagement.client\universalitemmanagement.client.esproj", "{B8B51963-DA8C-4707-B5BA-D1E2B0675E16}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UniversalItemManagement.EF", "UniversalItemManagement.EF\UniversalItemManagement.EF.csproj", "{185F93DC-7C6E-4EF7-9E0E-5883CDD77F7B}"
 EndProject
