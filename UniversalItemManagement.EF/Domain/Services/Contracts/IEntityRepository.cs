@@ -12,8 +12,8 @@ namespace UniversalItemManagement.EF.Domain.Services.Contracts
     public interface IEntityRepository<T> where T : Entity
     {
         
-        Task<T> FindByIdAsync(Guid id);
-        Task<T> FindByConditionAsync(Expression<Func<T, bool>> conditions);
+        Task<T?> FindByIdAsync(Guid id);
+        Task<T?> FindByConditionAsync(Expression<Func<T, bool>> conditions);
         Task<List<T>> ListAsync();
         Task<List<T>> ListAsync(int pageIndex, int pageSize);
         Task<List<T>> ListAsync(Expression<Func<T, bool>> conditions);

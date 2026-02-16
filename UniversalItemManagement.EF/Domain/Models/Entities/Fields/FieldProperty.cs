@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace UniversalItemManagement.EF.Domain.Models.Entities.Fields
 {
+    
     public enum FieldPropertyType
     {
         Text,

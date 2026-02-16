@@ -6,20 +6,46 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace UniversalItemManagement.EF.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialFieldSetup : Migration
+    public partial class InitialPostgreSQLSchema : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
+                name: "BooleanValue",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    ValueId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Value = table.Column<bool>(type: "boolean", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_BooleanValue", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "DateValue",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    ValueId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Value = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_DateValue", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Users",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()"),
-                    ModifiedOn = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()")
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    Email = table.Column<string>(type: "text", nullable: false),
+                    CreatedOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "NOW()"),
+                    ModifiedOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "NOW()")
                 },
                 constraints: table =>
                 {
@@ -30,13 +56,13 @@ namespace UniversalItemManagement.EF.Migrations
                 name: "FieldProperty",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Type = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()"),
-                    ModifiedOn = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()"),
-                    CreatedById = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    ModifiedById = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    Type = table.Column<string>(type: "text", nullable: false),
+                    CreatedOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "NOW()"),
+                    ModifiedOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "NOW()"),
+                    CreatedById = table.Column<Guid>(type: "uuid", nullable: true),
+                    ModifiedById = table.Column<Guid>(type: "uuid", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -57,13 +83,13 @@ namespace UniversalItemManagement.EF.Migrations
                 name: "FieldValue",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ValueId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    TextValue = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()"),
-                    ModifiedOn = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()"),
-                    CreatedById = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    ModifiedById = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    ValueId = table.Column<Guid>(type: "uuid", nullable: false),
+                    TextValue = table.Column<string>(type: "text", nullable: false),
+                    CreatedOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "NOW()"),
+                    ModifiedOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "NOW()"),
+                    CreatedById = table.Column<Guid>(type: "uuid", nullable: true),
+                    ModifiedById = table.Column<Guid>(type: "uuid", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -84,13 +110,13 @@ namespace UniversalItemManagement.EF.Migrations
                 name: "Records",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()"),
-                    ModifiedOn = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()"),
-                    CreatedById = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    ModifiedById = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: false),
+                    CreatedOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "NOW()"),
+                    ModifiedOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "NOW()"),
+                    CreatedById = table.Column<Guid>(type: "uuid", nullable: true),
+                    ModifiedById = table.Column<Guid>(type: "uuid", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -111,22 +137,36 @@ namespace UniversalItemManagement.EF.Migrations
                 name: "Field",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    X = table.Column<int>(type: "int", nullable: false),
-                    Y = table.Column<int>(type: "int", nullable: false),
-                    Width = table.Column<int>(type: "int", nullable: false),
-                    Height = table.Column<int>(type: "int", nullable: false),
-                    ValueId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    PropertyId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    RecordId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()"),
-                    ModifiedOn = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()"),
-                    CreatedById = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    ModifiedById = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    X = table.Column<int>(type: "integer", nullable: false),
+                    Y = table.Column<int>(type: "integer", nullable: false),
+                    Width = table.Column<int>(type: "integer", nullable: false),
+                    Height = table.Column<int>(type: "integer", nullable: false),
+                    TextValueId = table.Column<Guid>(type: "uuid", nullable: true),
+                    BooleanValueId = table.Column<Guid>(type: "uuid", nullable: true),
+                    DateValueId = table.Column<Guid>(type: "uuid", nullable: true),
+                    PropertyId = table.Column<Guid>(type: "uuid", nullable: false),
+                    RecordId = table.Column<Guid>(type: "uuid", nullable: false),
+                    CreatedOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "NOW()"),
+                    ModifiedOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "NOW()"),
+                    CreatedById = table.Column<Guid>(type: "uuid", nullable: true),
+                    ModifiedById = table.Column<Guid>(type: "uuid", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Field", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Field_BooleanValue_BooleanValueId",
+                        column: x => x.BooleanValueId,
+                        principalTable: "BooleanValue",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Field_DateValue_DateValueId",
+                        column: x => x.DateValueId,
+                        principalTable: "DateValue",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Field_FieldProperty_PropertyId",
                         column: x => x.PropertyId,
@@ -134,8 +174,8 @@ namespace UniversalItemManagement.EF.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Field_FieldValue_ValueId",
-                        column: x => x.ValueId,
+                        name: "FK_Field_FieldValue_TextValueId",
+                        column: x => x.TextValueId,
                         principalTable: "FieldValue",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -160,7 +200,7 @@ namespace UniversalItemManagement.EF.Migrations
             migrationBuilder.InsertData(
                 table: "Records",
                 columns: new[] { "Id", "CreatedById", "Description", "ModifiedById", "Name" },
-                values: new object[] { new Guid("342ea86c-fc10-4c46-b833-b94aac3a6772"), null, "Bla", null, "Test" });
+                values: new object[] { new Guid("ea05c8d1-b9ed-46b7-8152-f86540cf4120"), null, "Bla", null, "Test" });
 
             migrationBuilder.InsertData(
                 table: "Users",
@@ -168,9 +208,19 @@ namespace UniversalItemManagement.EF.Migrations
                 values: new object[] { new Guid("00000000-0000-0000-0000-000000000001"), "", "System" });
 
             migrationBuilder.CreateIndex(
+                name: "IX_Field_BooleanValueId",
+                table: "Field",
+                column: "BooleanValueId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Field_CreatedById",
                 table: "Field",
                 column: "CreatedById");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Field_DateValueId",
+                table: "Field",
+                column: "DateValueId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Field_ModifiedById",
@@ -188,9 +238,9 @@ namespace UniversalItemManagement.EF.Migrations
                 column: "RecordId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Field_ValueId",
+                name: "IX_Field_TextValueId",
                 table: "Field",
-                column: "ValueId");
+                column: "TextValueId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_FieldProperty_CreatedById",
@@ -228,6 +278,12 @@ namespace UniversalItemManagement.EF.Migrations
         {
             migrationBuilder.DropTable(
                 name: "Field");
+
+            migrationBuilder.DropTable(
+                name: "BooleanValue");
+
+            migrationBuilder.DropTable(
+                name: "DateValue");
 
             migrationBuilder.DropTable(
                 name: "FieldProperty");

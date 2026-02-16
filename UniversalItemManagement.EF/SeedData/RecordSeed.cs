@@ -13,7 +13,9 @@ namespace UniversalItemManagement.EF.SeedData
             new Record() {
                 Id = Guid.NewGuid(),
                 Name = "Test",
-                Description = "Bla"
+                Description = "Bla",
+                CreatedOn = DateTime.UtcNow,
+                ModifiedOn = DateTime.UtcNow
             },
         ];
     }

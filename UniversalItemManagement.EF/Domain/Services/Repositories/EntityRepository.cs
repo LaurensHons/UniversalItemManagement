@@ -24,23 +24,32 @@ namespace UniversalItemManagement.EF.Domain.Services.Repositories
         {
         }
 
-        public Task<T> FindByConditionAsync(Expression<Func<T, bool>> conditions)
+        protected virtual IQueryable<T> IncludeNavigationProperties(IQueryable<T> query)
         {
-            return context.Set<T>().AsNoTracking().FirstAsync(conditions);
+            return query;
         }
 
-        public Task<T> FindByIdAsync(Guid id)
+        public Task<T?> FindByConditionAsync(Expression<Func<T, bool>> conditions)
         {
-            return context.Set<T>().AsNoTracking().FirstAsync(e => e.Id == id);
+            var query = context.Set<T>().AsNoTracking();
+            query = IncludeNavigationProperties(query);
+            return query.FirstOrDefaultAsync(conditions);
+        }
+
+        public Task<T?> FindByIdAsync(Guid id)
+        {
+            var query = context.Set<T>().AsNoTracking();
+            query = IncludeNavigationProperties(query);
+            return query.FirstOrDefaultAsync(e => e.Id == id);
         }
 
         public Task<List<T>> ListAsync()
         {
             return Task.Run(() =>
             {
-                return context.Set<T>()
-                    .AsNoTracking()
-                    .ToList();
+                var query = context.Set<T>().AsNoTracking();
+                query = IncludeNavigationProperties(query);
+                return query.ToList();
             });
         }
 
@@ -48,10 +57,9 @@ namespace UniversalItemManagement.EF.Domain.Services.Repositories
         {
             return Task.Run(() =>
             {
-                return context.Set<T>()
-                    .Where(conditions)
-                    .AsNoTracking()
-                    .ToList();
+                var query = context.Set<T>().AsNoTracking();
+                query = IncludeNavigationProperties(query);
+                return query.Where(conditions).ToList();
             });
         }
 
@@ -59,10 +67,11 @@ namespace UniversalItemManagement.EF.Domain.Services.Repositories
         {
             return Task.Run(() =>
             {
-                return context.Set<T>()
+                var query = context.Set<T>().AsNoTracking();
+                query = IncludeNavigationProperties(query);
+                return query
                     .Skip((pageIndex - 1) * pageSize)
                     .Take(pageSize)
-                    .AsNoTracking()
                     .ToList();
             });
         }
@@ -70,11 +79,12 @@ namespace UniversalItemManagement.EF.Domain.Services.Repositories
         {
             return Task.Run(() =>
             {
-                return context.Set<T>()
+                var query = context.Set<T>().AsNoTracking();
+                query = IncludeNavigationProperties(query);
+                return query
                     .Where(conditions)
                     .Skip((pageIndex - 1) * pageSize)
                     .Take(pageSize)
-                    .AsNoTracking()
                     .ToList();
             });
         }

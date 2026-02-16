@@ -9,6 +9,7 @@ using System.Linq;
 using UniversalItemManagement.EF.Domain.Models;
 using UniversalItemManagement.EF.Domain.Models.Entities;
 using UniversalItemManagement.EF.Domain.Models.Entities.Fields;
+using UniversalItemManagement.EF.Domain.Models.Entities.Fields.Values;
 using UniversalItemManagement.EF.SeedData;
 
 namespace UniversalItemManagement.EF.Domain.Infrastructure
@@ -21,6 +22,16 @@ namespace UniversalItemManagement.EF.Domain.Infrastructure
         }
 
         public DbSet<User> Users
+        {
+            get; set;
+        }
+
+        public DbSet<BooleanValue> BooleanValues
+        {
+            get; set;
+        }
+
+        public DbSet<DateValue> DateValues
         {
             get; set;
         }
@@ -82,24 +93,6 @@ namespace UniversalItemManagement.EF.Domain.Infrastructure
             return base.SaveChanges();
         }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            var connectionString = Environment.GetEnvironmentVariable("DB_CONNECTION_STRING");
-            optionsBuilder.UseSqlServer(connectionString);
-#if DEBUG
-            optionsBuilder.EnableSensitiveDataLogging();
-#endif
-
-            //var lazyLoadEvents = new[]
-            //{
-            //    CoreEventId.NavigationLazyLoading,
-            //    CoreEventId.DetachedLazyLoadingWarning,
-            //    CoreEventId.LazyLoadOnDisposedContextWarning,
-            //};
-            //optionsBuilder.ConfigureWarnings(w => w.Throw(lazyLoadEvents));  //Lazyload now throws in DEBUG
-
-        }
-
         private static Type[] GetSubclasses(Type type)
         {
             var types = AppDomain.CurrentDomain.GetAssemblies()
@@ -128,23 +121,70 @@ namespace UniversalItemManagement.EF.Domain.Infrastructure
             {
                 modelBuilder.Entity(type).HasKey("Id");
                 modelBuilder.Entity(type).Property("Id").IsRequired().ValueGeneratedOnAdd();
-                modelBuilder.Entity(type).Property("CreatedOn").IsRequired().HasDefaultValueSql("GETDATE()");
-                modelBuilder.Entity(type).Property("ModifiedOn").IsRequired().HasDefaultValueSql("GETDATE()");
+                modelBuilder.Entity(type).Property("CreatedOn").IsRequired().HasDefaultValueSql("NOW()");
+                modelBuilder.Entity(type).Property("ModifiedOn").IsRequired().HasDefaultValueSql("NOW()");
                 modelBuilder.Entity(type).HasOne("CreatedBy").WithMany().OnDelete(DeleteBehavior.ClientSetNull);
-                modelBuilder.Entity(type).HasOne("ModifiedBy").WithMany().OnDelete(DeleteBehavior.ClientSetNull); 
+                modelBuilder.Entity(type).HasOne("ModifiedBy").WithMany().OnDelete(DeleteBehavior.ClientSetNull);
             }
 
             modelBuilder.Entity<User>().HasKey(e => e.Id);
             modelBuilder.Entity<User>().Property(e => e.Id).IsRequired().ValueGeneratedOnAdd();
-            modelBuilder.Entity<User>().Property(e => e.CreatedOn).IsRequired().HasDefaultValueSql("GETDATE()");
-            modelBuilder.Entity<User>().Property(e => e.ModifiedOn).IsRequired().HasDefaultValueSql("GETDATE()");
+            modelBuilder.Entity<User>().Property(e => e.CreatedOn).IsRequired().HasDefaultValueSql("NOW()");
+            modelBuilder.Entity<User>().Property(e => e.ModifiedOn).IsRequired().HasDefaultValueSql("NOW()");
 
             modelBuilder.Entity<User>().HasData(UserSeed.Data);
             modelBuilder.Entity<Record>().HasData(RecordSeed.Data);
-            
+
             modelBuilder.Entity<FieldProperty>()
                 .Property(FieldPropertyType => FieldPropertyType.Type)
                 .HasConversion(new EnumToStringConverter<FieldPropertyType>());
+
+            // Configure Record -> Fields relationship
+            modelBuilder.Entity<Record>()
+                .HasMany(r => r.Fields)
+                .WithOne(f => f.Record)
+                .HasForeignKey(f => f.RecordId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Configure BooleanValue (not inheriting Entity, so manual config needed)
+            modelBuilder.Entity<BooleanValue>()
+                .ToTable("BooleanValue")
+                .HasKey(b => b.Id);
+            modelBuilder.Entity<BooleanValue>()
+                .Property(b => b.Id)
+                .IsRequired()
+                .ValueGeneratedOnAdd();
+
+            // Configure DateValue (not inheriting Entity, so manual config needed)
+            modelBuilder.Entity<DateValue>()
+                .ToTable("DateValue")
+                .HasKey(d => d.Id);
+            modelBuilder.Entity<DateValue>()
+                .Property(d => d.Id)
+                .IsRequired()
+                .ValueGeneratedOnAdd();
+
+            // Configure Field nullable foreign keys for polymorphic values
+            modelBuilder.Entity<Field>()
+                .HasOne(f => f.TextValue)
+                .WithMany()
+                .HasForeignKey(f => f.TextValueId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .IsRequired(false);
+
+            modelBuilder.Entity<Field>()
+                .HasOne(f => f.BooleanValue)
+                .WithMany()
+                .HasForeignKey(f => f.BooleanValueId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .IsRequired(false);
+
+            modelBuilder.Entity<Field>()
+                .HasOne(f => f.DateValue)
+                .WithMany()
+                .HasForeignKey(f => f.DateValueId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .IsRequired(false);
 
             base.OnModelCreating(modelBuilder);
         }
