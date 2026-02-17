@@ -18,7 +18,7 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  test:
+  build-and-test:
     runs-on: ubuntu-latest
 
     steps:
@@ -38,8 +38,8 @@ jobs:
     - name: Run integration tests
       run: dotnet test UniversalItemManagement.IntegrationTests/UniversalItemManagement.IntegrationTests.csproj --no-build --verbosity normal
 
-  build-and-deploy:
-    needs: test
+  deploy:
+    needs: build-and-test
     runs-on: ubuntu-latest
 
     steps:
@@ -75,8 +75,8 @@ jobs:
       id: deployment
       uses: actions/deploy-pages@v4
 
-  build-and-push-docker:
-    needs: test
+  push-to-docker:
+    needs: build-and-test
     runs-on: ubuntu-latest
 
     steps:
