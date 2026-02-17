@@ -26,6 +26,16 @@ namespace UniversalItemManagement.EF.Domain.Infrastructure
             get; set;
         }
 
+        public DbSet<FieldValue> FieldValues
+        {
+            get; set;
+        }
+
+        public DbSet<TextValue> TextValues
+        {
+            get; set;
+        }
+
         public DbSet<BooleanValue> BooleanValues
         {
             get; set;
@@ -146,43 +156,60 @@ namespace UniversalItemManagement.EF.Domain.Infrastructure
                 .HasForeignKey(f => f.RecordId)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            // Configure TextValue (not inheriting Entity, so manual config needed)
+            modelBuilder.Entity<TextValue>()
+                .ToTable("TextValue")
+                .HasKey(t => t.ValueId);
+            modelBuilder.Entity<TextValue>()
+                .Property(t => t.ValueId)
+                .IsRequired()
+                .ValueGeneratedOnAdd();
+
             // Configure BooleanValue (not inheriting Entity, so manual config needed)
             modelBuilder.Entity<BooleanValue>()
                 .ToTable("BooleanValue")
-                .HasKey(b => b.Id);
+                .HasKey(b => b.ValueId);
             modelBuilder.Entity<BooleanValue>()
-                .Property(b => b.Id)
+                .Property(b => b.ValueId)
                 .IsRequired()
                 .ValueGeneratedOnAdd();
 
             // Configure DateValue (not inheriting Entity, so manual config needed)
             modelBuilder.Entity<DateValue>()
                 .ToTable("DateValue")
-                .HasKey(d => d.Id);
+                .HasKey(d => d.ValueId);
             modelBuilder.Entity<DateValue>()
-                .Property(d => d.Id)
+                .Property(d => d.ValueId)
                 .IsRequired()
                 .ValueGeneratedOnAdd();
 
-            // Configure Field nullable foreign keys for polymorphic values
+            // Configure Field -> FieldValue relationship
             modelBuilder.Entity<Field>()
-                .HasOne(f => f.TextValue)
+                .HasOne(f => f.FieldValue)
                 .WithMany()
-                .HasForeignKey(f => f.TextValueId)
+                .HasForeignKey(f => f.ValueId)
                 .OnDelete(DeleteBehavior.Cascade)
                 .IsRequired(false);
 
-            modelBuilder.Entity<Field>()
-                .HasOne(f => f.BooleanValue)
+            // Configure FieldValue nullable foreign keys for polymorphic values
+            modelBuilder.Entity<FieldValue>()
+                .HasOne(fv => fv.TextValue)
                 .WithMany()
-                .HasForeignKey(f => f.BooleanValueId)
+                .HasForeignKey(fv => fv.TextValueId)
                 .OnDelete(DeleteBehavior.Cascade)
                 .IsRequired(false);
 
-            modelBuilder.Entity<Field>()
-                .HasOne(f => f.DateValue)
+            modelBuilder.Entity<FieldValue>()
+                .HasOne(fv => fv.BooleanValue)
                 .WithMany()
-                .HasForeignKey(f => f.DateValueId)
+                .HasForeignKey(fv => fv.BooleanValueId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .IsRequired(false);
+
+            modelBuilder.Entity<FieldValue>()
+                .HasOne(fv => fv.DateValue)
+                .WithMany()
+                .HasForeignKey(fv => fv.DateValueId)
                 .OnDelete(DeleteBehavior.Cascade)
                 .IsRequired(false);
 

@@ -17,6 +17,14 @@
       <div class="sidebar-header">
         <mat-icon>add_circle_outline</mat-icon>
         <h3>Add Fields</h3>
+        <button
+          mat-icon-button
+          (click)="openPropertyCreator()"
+          matTooltip="Create new property type"
+          class="create-property-button"
+        >
+          <mat-icon>add</mat-icon>
+        </button>
       </div>
       <div class="field-type-list">
         <button
@@ -37,14 +45,17 @@
     <!-- Main grid area -->
     <div
       class="field-grid"
-      [class.editable]="!isLocked"
       (dragover)="onDragOver($event)"
       (drop)="onDrop($event)"
+      [class.editable]="!isLocked"
     >
       <div
         *ngFor="let field of fields; trackBy: trackByFieldId"
         class="field-item"
         [class.editable]="!isLocked"
+        [attr.draggable]="!isLocked"
+        (dragstart)="onFieldDragStart(field, $event) "
+        (dragend)="onDragEnd()"
         [style.grid-column]="field.x + ' / span ' + field.width"
         [style.grid-row]="field.y + ' / span ' + field.height"
       >
@@ -56,19 +67,22 @@
           <app-text-field
             *ngSwitchCase="FieldPropertyType.Text"
             [field]="field"
-            [property]="getFieldProperty(field)!">
+            [property]="getFieldProperty(field)!"
+            (valueChanged)="onValueChanged($event)">
           </app-text-field>
 
           <app-date-field
             *ngSwitchCase="FieldPropertyType.Date"
             [field]="field"
-            [property]="getFieldProperty(field)!">
+            [property]="getFieldProperty(field)!"
+            (valueChanged)="onValueChanged($event)">
           </app-date-field>
 
           <app-boolean-field
             *ngSwitchCase="FieldPropertyType.Boolean"
             [field]="field"
-            [property]="getFieldProperty(field)!">
+            [property]="getFieldProperty(field)!"
+            (valueChanged)="onValueChanged($event)">
           </app-boolean-field>
 
           <div *ngSwitchDefault class="unknown-field">Unknown field type</div>
@@ -78,9 +92,10 @@
       </div>
 
       <!-- Drop zone indicator -->
-      <div class="drop-zone-indicator" *ngIf="!isLocked && draggedFieldType">
-        <mat-icon>add_box</mat-icon>
-        <p>Drop here to add field</p>
+      <div class="drop-zone-indicator" *ngIf="!isLocked && (draggedOption || draggedField)">
+        <mat-icon>{{ draggedOption ? 'add_box' : 'open_with' }}</mat-icon>
+        <p *ngIf="draggedOption">Drop here to add {{ draggedOption.label }}</p>
+        <p *ngIf="draggedField">Drop to reposition field</p>
       </div>
     </div>
   </div>

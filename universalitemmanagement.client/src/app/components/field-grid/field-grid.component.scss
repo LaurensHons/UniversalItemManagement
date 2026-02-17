@@ -53,6 +53,24 @@
       margin: 0;
       font-size: 16px;
       font-weight: 500;
+      flex: 1;
+    }
+
+    .create-property-button {
+      width: 32px;
+      height: 32px;
+      line-height: 32px;
+
+      mat-icon {
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
+      }
+
+      &:hover {
+        background-color: #e3f2fd;
+        color: #2196f3;
+      }
     }
   }
 
@@ -72,6 +90,7 @@
     cursor: grab;
     transition: all 0.2s;
     background-color: white;
+    user-select: none;
 
     &:active {
       cursor: grabbing;
@@ -81,6 +100,12 @@
       background-color: #e3f2fd;
       border-color: #2196f3;
       transform: translateX(4px);
+    }
+
+    &.dragging {
+      opacity: 0.5;
+      cursor: grabbing;
+      transform: scale(0.95);
     }
 
     mat-icon {
@@ -97,7 +122,7 @@
 .field-grid {
   display: grid;
   grid-template-columns: repeat(12, 1fr);
-  grid-auto-rows: minmax(60px, auto);
+  grid-auto-rows: 60px;
   gap: 16px;
   padding: 16px;
   padding-top: 56px;
@@ -109,26 +134,27 @@
     background-image:
       linear-gradient(to right, #e0e0e0 1px, transparent 1px),
       linear-gradient(to bottom, #e0e0e0 1px, transparent 1px);
-    background-size: calc(100% / 12) 76px;
+    background-size: calc((100% - 32px + 16px) / 12) calc(60px + 16px);
     background-position: 16px 56px;
   }
 }
 
 .drop-zone-indicator {
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  top: 56px;
+  left: 16px;
+  right: 16px;
+  bottom: 16px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background-color: rgba(33, 150, 243, 0.1);
+  background-color: rgba(33, 150, 243, 0.05);
   border: 2px dashed #2196f3;
   border-radius: 8px;
   pointer-events: none;
   z-index: 5;
+  animation: pulse 2s ease-in-out infinite;
 
   mat-icon {
     font-size: 48px;
@@ -146,11 +172,22 @@
   }
 }
 
+@keyframes pulse {
+  0%, 100% {
+    border-color: #2196f3;
+    background-color: rgba(33, 150, 243, 0.05);
+  }
+  50% {
+    border-color: #1976d2;
+    background-color: rgba(33, 150, 243, 0.1);
+  }
+}
+
 .field-item {
   display: flex;
   flex-direction: column;
   position: relative;
-  transition: box-shadow 0.2s;
+  transition: box-shadow 0.2s, opacity 0.2s, transform 0.2s;
 
   &.editable {
     border: 2px dashed #2196f3;
@@ -162,6 +199,18 @@
     &:hover {
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
       border-color: #1976d2;
+    }
+
+    &.dragging {
+      opacity: 0.5;
+      cursor: grabbing;
+      transform: scale(0.95);
+      pointer-events: none; // Prevent the dragged field from interfering with drop
+    }
+
+    // Make children not interfere with drag/drop when dragging
+    > * {
+      pointer-events: auto;
     }
   }
 }

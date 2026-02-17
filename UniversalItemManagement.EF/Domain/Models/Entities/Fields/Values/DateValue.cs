@@ -6,9 +6,8 @@ using System.Threading.Tasks;
 
 namespace UniversalItemManagement.EF.Domain.Models.Entities.Fields.Values
 {
-    public class DateValue : IFieldValue<DateValue>
+    public class DateValue
     {
-        public Guid Id { get; set; }
         public Guid ValueId { get; set; }
         public DateTime Value { get; set; }
     }

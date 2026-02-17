@@ -6,9 +6,8 @@ using System.Threading.Tasks;
 
 namespace UniversalItemManagement.EF.Domain.Models.Entities.Fields.Values
 {
-    public class BooleanValue : IFieldValue<BooleanValue>
+    public class BooleanValue
     {
-        public Guid Id { get; set; }
         public Guid ValueId { get; set; }
         public bool Value { get; set; }
     }

@@ -10,6 +10,7 @@ namespace UniversalItemManagement.Server.Hubs
         Record,
         Field,
         FieldProperty,
+        FieldValue,
     }
     public interface IClient
     {

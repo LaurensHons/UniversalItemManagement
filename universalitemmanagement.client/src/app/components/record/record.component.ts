@@ -1,4 +1,4 @@
-import { Component, Input, SimpleChanges } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Record } from 'src/app/core/models/record.model';
 import {
@@ -14,7 +14,6 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { RecordFacade } from 'src/app/core/domain/store/record/record.state';
 import {
-  BehaviorSubject,
   filter,
   forkJoin,
   map,
@@ -73,18 +72,24 @@ export class RecordComponent {
       description: new FormControl(''),
     });
 
+    // Subscribe to record changes from state
     this.route.paramMap
       .pipe(
         map((p) => p.get('id')),
         filter((v) => !!v),
         switchMap((v) => this.recordService.entity$(v!)),
         tap((record) => {
+          // Update local record reference when state changes
           this.record = record;
-          this.form.setValue({
-            id: record.id,
-            name: record.name,
-            description: record.description,
-          });
+
+          // Only update form if values have changed to avoid overwriting user edits
+          if (this.form.get('id')?.value !== record.id) {
+            this.form.setValue({
+              id: record.id,
+              name: record.name,
+              description: record.description,
+            });
+          }
         }),
         switchMap((record) => this.loadFieldPropertiesForRecord(record))
       )
@@ -116,10 +121,9 @@ export class RecordComponent {
         // If all properties are in state, use them
         if (missingPropertyIds.length === 0) {
           const properties = uniquePropertyIds.map((id) => propertiesInStateMap.get(id)!);
-          this.fieldPropertiesMap.clear();
-          properties.forEach((property) => {
-            this.fieldPropertiesMap.set(property.id, property);
-          });
+          this.fieldPropertiesMap = new Map(
+            properties.map((property) => [property.id, property])
+          );
           return of(properties);
         }
 
@@ -138,10 +142,9 @@ export class RecordComponent {
               ...fetchedProperties,
             ];
 
-            this.fieldPropertiesMap.clear();
-            allProperties.forEach((property) => {
-              this.fieldPropertiesMap.set(property.id, property);
-            });
+            this.fieldPropertiesMap = new Map(
+              allProperties.map((property) => [property.id, property])
+            );
 
             return allProperties;
           })
@@ -156,7 +159,7 @@ export class RecordComponent {
     const record = new Record(this.form.value);
     this.recordService
       .updateEntity(record)
-      .subscribe((record) => {
+      .subscribe(() => {
         this.form.reset();
       });
   }
@@ -173,10 +176,72 @@ export class RecordComponent {
       recordId: this.record.id,
     } as Field);
 
-    console.log(newField)
 
     this.fieldFacade.addEntity(newField).subscribe((createdField: Field) => {
       console.log('Field created successfully:', createdField);
+      this.addFieldToRecord(createdField);
     });
+  }
+
+  onFieldMoved(event: { fieldId: string; x: number; y: number }): void {
+    if (!this.record) return;
+
+    const field = this.record.fields.find(f => f.id === event.fieldId);
+    if (!field) return;
+
+    console.log('Moving field:', { field, newPosition: event });
+
+    const updatedField = new Field({
+      ...field,
+      x: event.x,
+      y: event.y
+    } as Field);
+
+    this.updateFieldAndRecord(updatedField, 'Field position updated');
+  }
+
+  onFieldValueChanged(event: { fieldId: string; valueId: string }): void {
+    if (!this.record) return;
+
+    const field = this.record.fields.find(f => f.id === event.fieldId);
+    if (!field) return;
+
+    const updatedField = new Field({
+      ...field,
+      valueId: event.valueId
+    } as Field);
+
+    this.updateFieldAndRecord(updatedField, 'Field valueId updated');
+  }
+
+  private updateFieldAndRecord(updatedField: Field, logMessage: string): void {
+    this.fieldFacade.updateEntity(updatedField).subscribe((savedField: Field) => {
+      console.log(logMessage, savedField);
+      this.replaceFieldInRecord(savedField);
+    });
+  }
+
+  private addFieldToRecord(field: Field): void {
+    if (!this.record) return;
+
+    const updatedRecord = new Record({
+      ...this.record,
+      fields: [...this.record.fields, field]
+    });
+
+    this.recordService.updateEntity(updatedRecord).subscribe();
+  }
+
+  private replaceFieldInRecord(updatedField: Field): void {
+    if (!this.record) return;
+
+    const updatedRecord = new Record({
+      ...this.record,
+      fields: this.record.fields.map(f =>
+        f.id === updatedField.id ? updatedField : f
+      )
+    });
+
+    this.recordService.updateEntity(updatedRecord).subscribe();
   }
 }

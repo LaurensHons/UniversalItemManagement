@@ -3,11 +3,13 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
 using UniversalItemManagement.EF.Domain.Models.Entities;
 using UniversalItemManagement.EF.Domain.Models.Entities.Fields;
+using UniversalItemManagement.EF.Domain.Models.Entities.Fields.Values;
 using UniversalItemManagement.EF.Domain.Services.Contracts;
 using UniversalItemManagement.Server.Hubs;
 using UniversalItemManagement.Server.Middleware;
 using UniversalItemManagement.Server.Services;
 using UniversalItemManagement.Server.Services.Contracts;
+using UniversalItemManagement.Server.Configuration;
 
 namespace UniversalItemManagement.Server
 {
@@ -17,7 +19,11 @@ namespace UniversalItemManagement.Server
         
         public static IServiceCollection AddServices(this IServiceCollection services)
         {
-            services.AddSignalR();
+            services.AddSignalR()
+                .AddJsonProtocol(options =>
+                {
+                    JsonSerializationConfiguration.ConfigureJsonSerializerOptions(options.PayloadSerializerOptions);
+                });
             services.AddTransient<EntityHub>();
             services.AddTransient<EntitySignalService>();
             services.AddScoped<HubConnectionService>();
@@ -40,6 +46,13 @@ namespace UniversalItemManagement.Server
                     new EntityUpdatedService<FieldProperty>(
                         provider,
                         HubEnum.FieldProperty
+                    )
+                );
+            services.AddTransient<IEntityService<FieldValue>, EntityUpdatedService<FieldValue>>(
+                (provider) =>
+                    new EntityUpdatedService<FieldValue>(
+                        provider,
+                        HubEnum.FieldValue
                     )
                 );
 

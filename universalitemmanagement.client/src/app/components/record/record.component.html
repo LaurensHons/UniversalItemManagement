@@ -24,7 +24,9 @@
     <app-field-grid
       [fields]="record?.fields ?? []"
       [fieldProperties]="fieldPropertiesMap"
-      (fieldAdded)="onFieldAdded($event)">
+      (fieldAdded)="onFieldAdded($event)"
+      (fieldMoved)="onFieldMoved($event)"
+      (fieldValueChanged)="onFieldValueChanged($event)">
     </app-field-grid>
   </div>
 

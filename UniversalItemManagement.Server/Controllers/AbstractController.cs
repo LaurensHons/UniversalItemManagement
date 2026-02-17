@@ -32,7 +32,7 @@ namespace UniversalItemManagement.Server.Controllers
             return await _service.ListAsync();
         }
 
-        [HttpGet(":id")]
+        [HttpGet("{id}")]
         public virtual async Task<T> GetById([FromRoute] Guid id)
         {
             return await _service.FindByIdAsync(id);
@@ -57,7 +57,7 @@ namespace UniversalItemManagement.Server.Controllers
             return true;
         }
 
-        [HttpDelete(":id")]
+        [HttpDelete("{id}")]
         public virtual async Task<bool> Delete([FromRoute] Guid id)
         {
             await _service.DeleteById(id);

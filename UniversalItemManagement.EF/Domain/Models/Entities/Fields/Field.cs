@@ -14,15 +14,8 @@ namespace UniversalItemManagement.EF.Domain.Models.Entities.Fields
         public int Width { get; set; }
         public int Height { get; set; }
 
-        // Nullable foreign keys for each value type
-        public Guid? TextValueId { get; set; }
-        public FieldValue? TextValue { get; set; }
-
-        public Guid? BooleanValueId { get; set; }
-        public BooleanValue? BooleanValue { get; set; }
-
-        public Guid? DateValueId { get; set; }
-        public DateValue? DateValue { get; set; }
+        public Guid? ValueId { get; set; }
+        public FieldValue? FieldValue { get; set; }
 
         public Guid PropertyId { get; set; }
         public FieldProperty? Property { get; set; }

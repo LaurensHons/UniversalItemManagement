@@ -1,0 +1,32 @@
+<h2 mat-dialog-title>Create New Field Property</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="propertyForm" class="property-form">
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Property Name</mat-label>
+      <input matInput formControlName="name" placeholder="e.g., Email, Age, Status" />
+      <mat-error *ngIf="propertyForm.get('name')?.hasError('required')">
+        Property name is required
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Property Type</mat-label>
+      <mat-select formControlName="type">
+        <mat-option *ngFor="let type of propertyTypes" [value]="type.value">
+          <div class="type-option">
+            <mat-icon>{{ type.icon }}</mat-icon>
+            <span>{{ type.label }}</span>
+          </div>
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">Cancel</button>
+  <button mat-raised-button color="primary" (click)="onSubmit()" [disabled]="!propertyForm.valid">
+    Create Property
+  </button>
+</mat-dialog-actions>

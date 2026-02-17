@@ -5,9 +5,7 @@ export class Field extends Entity {
   y!: number;
   width!: number;
   height!: number;
-  textValueId?: string;
-  booleanValueId?: string;
-  dateValueId?: string;
+  valueId?: string;
   propertyId!: string;
   recordId!: string;
 

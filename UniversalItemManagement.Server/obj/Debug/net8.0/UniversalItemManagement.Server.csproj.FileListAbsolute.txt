@@ -474,3 +474,4 @@ C:\Users\laure\source\repos\UniversalItemManagement\UniversalItemManagement.Serv
 C:\Users\laure\source\repos\UniversalItemManagement\UniversalItemManagement.Server\obj\Debug\net8.0\UniversalItemManagement.Server.pdb
 C:\Users\laure\source\repos\UniversalItemManagement\UniversalItemManagement.Server\obj\Debug\net8.0\UniversalItemManagement.Server.genruntimeconfig.cache
 C:\Users\laure\source\repos\UniversalItemManagement\UniversalItemManagement.Server\obj\Debug\net8.0\ref\UniversalItemManagement.Server.dll
+C:\Users\laure\source\repos\UniversalItemManagement\UniversalItemManagement.Server\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt

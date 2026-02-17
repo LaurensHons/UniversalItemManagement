@@ -1,0 +1,28 @@
+.property-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 400px;
+  padding: 16px 0;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.type-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+  }
+}
+
+mat-dialog-content {
+  max-height: 60vh;
+  overflow-y: auto;
+}
