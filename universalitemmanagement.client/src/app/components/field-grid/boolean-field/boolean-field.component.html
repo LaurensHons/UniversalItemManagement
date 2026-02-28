@@ -1,8 +1,24 @@
-<div class="boolean-field-container">
-  <mat-checkbox
-    [formControl]="booleanControl"
-    (change)="onValueChange()"
+<div class="sf sf--bool" [class.sf--saving]="status === 'saving'">
+  <label class="sf__label">
+    <mat-icon class="sf__label-icon">toggle_on</mat-icon>
+    {{ property?.name }}
+    <span class="sf__status" *ngIf="status !== 'idle'">
+      <mat-icon *ngIf="status === 'saving'" class="sf__status-icon sf__status-icon--spin">sync</mat-icon>
+      <mat-icon *ngIf="status === 'saved'" class="sf__status-icon sf__status-icon--saved">check_circle</mat-icon>
+      <mat-icon *ngIf="status === 'error'" class="sf__status-icon sf__status-icon--error">error</mat-icon>
+    </span>
+  </label>
+  <button
+    class="sf__toggle"
+    [class.sf__toggle--on]="value"
+    (click)="toggle()"
+    [attr.aria-checked]="value"
+    role="switch"
+    type="button"
   >
-    {{ property.name }}
-  </mat-checkbox>
+    <span class="sf__toggle-track">
+      <span class="sf__toggle-thumb"></span>
+    </span>
+    <span class="sf__toggle-label">{{ value ? 'Yes' : 'No' }}</span>
+  </button>
 </div>

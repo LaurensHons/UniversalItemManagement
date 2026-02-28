@@ -1,12 +1,25 @@
-<mat-form-field appearance="outline" class="full-width">
-  <mat-label>{{ property.name }}</mat-label>
-  <input
-    matInput
-    [matDatepicker]="picker"
-    [formControl]="dateControl"
-    (dateChange)="onValueChange()"
-    placeholder="Select {{ property.name }}"
-  />
-  <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-  <mat-datepicker #picker></mat-datepicker>
-</mat-form-field>
+<div class="sf sf--date" [class.sf--saving]="status === 'saving'">
+  <label class="sf__label">
+    <mat-icon class="sf__label-icon">event</mat-icon>
+    {{ property?.name }}
+    <span class="sf__status" *ngIf="status !== 'idle'">
+      <mat-icon *ngIf="status === 'saving'" class="sf__status-icon sf__status-icon--spin">sync</mat-icon>
+      <mat-icon *ngIf="status === 'saved'" class="sf__status-icon sf__status-icon--saved">check_circle</mat-icon>
+      <mat-icon *ngIf="status === 'error'" class="sf__status-icon sf__status-icon--error">error</mat-icon>
+    </span>
+  </label>
+  <div class="sf__date-wrap">
+    <input
+      class="sf__input"
+      [matDatepicker]="picker"
+      [formControl]="dateControl"
+      (dateChange)="onValueChange()"
+      [placeholder]="'Pick ' + (property?.name ?? 'date')"
+      readonly
+    />
+    <mat-datepicker-toggle class="sf__date-toggle" [for]="picker">
+      <mat-icon matDatepickerToggleIcon class="sf__date-icon">calendar_today</mat-icon>
+    </mat-datepicker-toggle>
+    <mat-datepicker #picker></mat-datepicker>
+  </div>
+</div>

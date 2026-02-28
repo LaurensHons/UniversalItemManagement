@@ -20,10 +20,6 @@ namespace UniversalItemManagement.EF.Domain.Services.Repositories
             context = c;
         }
 
-        public EntityRepository()
-        {
-        }
-
         protected virtual IQueryable<T> IncludeNavigationProperties(IQueryable<T> query)
         {
             return query;
@@ -43,59 +39,53 @@ namespace UniversalItemManagement.EF.Domain.Services.Repositories
             return query.FirstOrDefaultAsync(e => e.Id == id);
         }
 
-        public Task<List<T>> ListAsync()
+        public async Task<List<T>> ListAsync()
         {
-            return Task.Run(() =>
-            {
-                var query = context.Set<T>().AsNoTracking();
-                query = IncludeNavigationProperties(query);
-                return query.ToList();
-            });
+            var query = context.Set<T>().AsNoTracking();
+            query = IncludeNavigationProperties(query);
+            return await query.ToListAsync();
         }
 
-        public Task<List<T>> ListAsync(Expression<Func<T, bool>> conditions)
+        public async Task<List<T>> ListAsync(Expression<Func<T, bool>> conditions)
         {
-            return Task.Run(() =>
-            {
-                var query = context.Set<T>().AsNoTracking();
-                query = IncludeNavigationProperties(query);
-                return query.Where(conditions).ToList();
-            });
+            var query = context.Set<T>().AsNoTracking();
+            query = IncludeNavigationProperties(query);
+            return await query.Where(conditions).ToListAsync();
         }
 
-        public Task<List<T>> ListAsync(int pageIndex, int pageSize)
+        public async Task<List<T>> ListAsync(int pageIndex, int pageSize)
         {
-            return Task.Run(() =>
-            {
-                var query = context.Set<T>().AsNoTracking();
-                query = IncludeNavigationProperties(query);
-                return query
-                    .Skip((pageIndex - 1) * pageSize)
-                    .Take(pageSize)
-                    .ToList();
-            });
+            var query = context.Set<T>().AsNoTracking();
+            query = IncludeNavigationProperties(query);
+            return await query
+                .Skip((pageIndex - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
         }
-        public Task<List<T>> ListAsync(Expression<Func<T, bool>> conditions, int pageIndex, int pageSize)
+
+        public async Task<List<T>> ListAsync(Expression<Func<T, bool>> conditions, int pageIndex, int pageSize)
         {
-            return Task.Run(() =>
-            {
-                var query = context.Set<T>().AsNoTracking();
-                query = IncludeNavigationProperties(query);
-                return query
-                    .Where(conditions)
-                    .Skip((pageIndex - 1) * pageSize)
-                    .Take(pageSize)
-                    .ToList();
-            });
+            var query = context.Set<T>().AsNoTracking();
+            query = IncludeNavigationProperties(query);
+            return await query
+                .Where(conditions)
+                .Skip((pageIndex - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
         }
-        public async Task<T> Add(T entity)
+        public Task<bool> ExistsAsync(Guid id)
+        {
+            return context.Set<T>().AnyAsync(e => e.Id == id);
+        }
+
+        public async Task<T> AddAsync(T entity)
         {
             context.Add<T>(entity);
             await context.SaveChangesAsync();
             return entity;
         }
 
-        public async Task<T> Update(T entity)
+        public async Task<T> UpdateAsync(T entity)
         {
             context.Update<T>(entity);
             await context.SaveChangesAsync();
@@ -103,13 +93,13 @@ namespace UniversalItemManagement.EF.Domain.Services.Repositories
         }
 
 
-        public async Task Delete(T entity)
+        public async Task DeleteAsync(T entity)
         {
             context.Remove<T>(entity);
             await context.SaveChangesAsync();
         }
 
-        public async Task DeleteById(Guid id)
+        public async Task DeleteByIdAsync(Guid id)
         {
             var entityToRemove = context.Set<T>().First(e => e.Id == id);
             context.Remove(entityToRemove);

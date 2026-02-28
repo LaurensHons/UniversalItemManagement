@@ -15,8 +15,6 @@ namespace UniversalItemManagement.Server.Services
         IEntityRepository<T> entityRepository;
         EntitySignalService signalService;
         HubEnum? topicValue = null;
-
-
         public EntityUpdatedService(
             IServiceProvider provider,
             HubEnum? _topicValue = null
@@ -26,7 +24,6 @@ namespace UniversalItemManagement.Server.Services
             signalService = provider.GetRequiredService<EntitySignalService>();
             topicValue = _topicValue;
         }
-
 
         public Task<T> FindByIdAsync(Guid id)
         {
@@ -39,7 +36,7 @@ namespace UniversalItemManagement.Server.Services
 
         public async Task<T> Add(T entity)
         {
-            var value = await entityRepository.Add(entity);
+            var value = await entityRepository.AddAsync(entity);
             if (topicValue.HasValue)
                 await signalService.AddEntities(topicValue.Value, new List<T>() { entity });
             return value;
@@ -47,7 +44,7 @@ namespace UniversalItemManagement.Server.Services
 
         public async Task<T> Update(T entity)
         {
-            var value = await entityRepository.Update(entity);
+            var value = await entityRepository.UpdateAsync(entity);
             if (topicValue.HasValue)
                 await signalService.UpdateEntities(topicValue.Value, new List<T>() { entity });
             return value;
@@ -60,7 +57,7 @@ namespace UniversalItemManagement.Server.Services
 
         public async Task DeleteById(Guid id)
         {
-            await entityRepository.DeleteById(id);
+            await entityRepository.DeleteByIdAsync(id);
             if (topicValue.HasValue)
                 await signalService.DeleteEntities(topicValue.Value, new List<Guid>() { id });
         }

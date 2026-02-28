@@ -1,22 +1,45 @@
-<div class="sideBar">
-  <div class="top d-flex">
-    <h2>Records</h2>
-    <button mat-stroked-button [routerLink]="'new'">
-      <mat-icon>add</mat-icon>
-    </button>
-  </div>
-  <div class="list">
-    <ul>
-      <li *ngFor="let record of records">
-        <a
-          [routerLink]="['record', record.id]"
-          routerLinkActive="router-link-active"
-          >{{ record.name }}</a
-        >
-      </li>
-    </ul>
-  </div>
-</div>
+<div class="rl">
+  <!-- ─── Sidebar ─────────────────────────────────────────────── -->
+  <aside class="rl__sidebar">
+    <div class="rl__sidebar-header">
+      <span class="rl__sidebar-title">Records</span>
+      <button
+        class="rl__btn rl__btn--terracotta rl__btn--small"
+        [routerLink]="'new'"
+        matTooltip="Create new record"
+      >
+        <mat-icon>add</mat-icon>
+      </button>
+    </div>
 
-<h1 id="tableLabel">Records</h1>
-<router-outlet />
+    <div class="rl__sidebar-list">
+      <a
+        *ngFor="let record of records"
+        class="rl__sidebar-item"
+        [routerLink]="['record', record.id]"
+        routerLinkActive="rl__sidebar-item--active"
+      >
+        <div class="rl__sidebar-item-icon">
+          <mat-icon>description</mat-icon>
+        </div>
+        <div class="rl__sidebar-item-info">
+          <span class="rl__sidebar-item-name">{{ record.name }}</span>
+          <span class="rl__sidebar-item-meta" *ngIf="record.description">{{ record.description }}</span>
+        </div>
+      </a>
+
+      <div class="rl__sidebar-empty" *ngIf="!records.length">
+        <mat-icon>folder_open</mat-icon>
+        <span>No records yet</span>
+        <button class="rl__btn rl__btn--small rl__btn--terracotta" [routerLink]="'new'">
+          Create one
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ─── Main Content ────────────────────────────────────────── -->
+  <main class="rl__content">
+    <router-outlet />
+  </main>
+</div>

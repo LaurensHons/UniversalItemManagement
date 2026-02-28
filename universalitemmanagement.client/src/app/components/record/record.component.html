@@ -1,34 +1,41 @@
-<div class="record-container">
-  <div class="record-header">
-    <h2>{{ record?.name }}</h2>
-    <p class="description">{{ record?.description }}</p>
+<div class="rc">
+  <div class="rc__header">
+    <div class="rc__header-icon">
+      <mat-icon>description</mat-icon>
+    </div>
+    <div class="rc__header-text">
+      <h1 class="rc__name">{{ record?.name }}</h1>
+      <p class="rc__desc" *ngIf="record?.description">{{ record?.description }}</p>
+    </div>
   </div>
 
-  <div class="record-form" [formGroup]="form">
-    <mat-form-field appearance="outline" class="no-subscript-wrapper">
-      <mat-label>Name</mat-label>
-      <input matInput placeholder="Name" formControlName="name" />
-    </mat-form-field>
-    <mat-form-field appearance="outline" class="no-subscript-wrapper">
-      <mat-label>Description</mat-label>
-      <input matInput placeholder="Description" formControlName="description" />
-    </mat-form-field>
-    <button mat-stroked-button (click)="saveRecord()">
-      <mat-icon>save</mat-icon>
-      Save Record
-    </button>
+  <div class="rc__panel">
+    <div class="rc__panel-toolbar">
+      <span class="rc__panel-label">Details</span>
+    </div>
+    <div class="rc__meta" [formGroup]="form">
+      <mat-form-field appearance="outline" class="no-subscript-wrapper rc__field">
+        <mat-label>Name</mat-label>
+        <input matInput placeholder="Record name" formControlName="name" />
+      </mat-form-field>
+      <mat-form-field appearance="outline" class="no-subscript-wrapper rc__field">
+        <mat-label>Description</mat-label>
+        <input matInput placeholder="Description" formControlName="description" />
+      </mat-form-field>
+      <button class="rc__btn rc__btn--primary" (click)="saveRecord()">
+        <mat-icon>save</mat-icon>
+        Save
+      </button>
+    </div>
   </div>
 
-  <div class="fields-section">
-    <h3>Fields</h3>
-    <app-field-grid
-      [fields]="record?.fields ?? []"
-      [fieldProperties]="fieldPropertiesMap"
-      (fieldAdded)="onFieldAdded($event)"
-      (fieldMoved)="onFieldMoved($event)"
-      (fieldValueChanged)="onFieldValueChanged($event)">
-    </app-field-grid>
-  </div>
-
-
+  <app-field-grid
+    [fields]="record?.fields ?? []"
+    [fieldProperties]="fieldPropertiesMap"
+    (fieldAdded)="onFieldAdded($event)"
+    (fieldMoved)="onFieldMoved($event)"
+    (fieldResized)="onFieldResized($event)"
+    (fieldDeleted)="onFieldDeleted($event)"
+    (fieldValueChanged)="onFieldValueChanged($event)">
+  </app-field-grid>
 </div>

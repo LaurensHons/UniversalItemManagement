@@ -1,27 +1,13 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import {
-  AbstractControl,
-  FormControl,
-  FormGroup,
-  FormsModule,
-  ReactiveFormsModule,
-  ValidationErrors,
-  ValidatorFn,
-  Validators,
-} from '@angular/forms';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { Record } from 'src/app/core/models/record.model';
 import {
   RecordEntities,
   RecordFacade,
 } from 'src/app/core/domain/store/record/record.state';
-import { RecordComponent } from '../record/record.component';
-import { NewRecordComponent } from '../new-record/new-record.component';
 import {
   Router,
   RouterLink,
@@ -36,6 +22,7 @@ import {
     CommonModule,
     MatButtonModule,
     MatIconModule,
+    MatTooltipModule,
     RouterOutlet,
     RouterLink,
     RouterLinkActive,

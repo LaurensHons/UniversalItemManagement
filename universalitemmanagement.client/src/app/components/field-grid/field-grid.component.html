@@ -1,101 +1,180 @@
-<div class="field-grid-container">
-  <div class="lock-button-container">
-    <button
-      mat-icon-button
-      (click)="toggleLock()"
-      [matTooltip]="isLocked ? 'Unlock grid editor' : 'Lock grid editor'"
-      class="lock-button"
-      [class.unlocked]="!isLocked"
-    >
-      <mat-icon>{{ isLocked ? 'lock' : 'lock_open' }}</mat-icon>
-    </button>
+<div class="fg" [class.fg--editing]="!isLocked">
+
+  <!-- ─── Toolbar ─────────────────────────────────────────────── -->
+  <div class="fg__toolbar">
+    <div class="fg__toolbar-left">
+      <span class="fg__title">Fields</span>
+      <span class="fg__field-count" *ngIf="fields.length">{{ fields.length }}</span>
+    </div>
+    <div class="fg__toolbar-right">
+      <button
+        *ngIf="!isLocked"
+        class="fg__btn fg__btn--ghost"
+        (click)="toggleSidebar()"
+        [matTooltip]="sidebarExpanded ? 'Collapse panel' : 'Expand panel'"
+      >
+        <mat-icon>{{ sidebarExpanded ? 'chevron_left' : 'add_circle_outline' }}</mat-icon>
+      </button>
+      <button
+        class="fg__btn"
+        [class.fg__btn--active]="!isLocked"
+        (click)="toggleLock()"
+        [matTooltip]="isLocked ? 'Edit layout' : 'Lock layout'"
+      >
+        <mat-icon class="material-icons-outlined">{{ isLocked ? 'edit' : 'lock' }}</mat-icon>
+        <span class="fg__btn-label">{{ isLocked ? 'Edit' : 'Done' }}</span>
+      </button>
+    </div>
   </div>
 
-  <div class="field-grid-layout">
-    <!-- Sidebar with draggable field types -->
-    <div class="field-sidebar" *ngIf="!isLocked">
-      <div class="sidebar-header">
-        <mat-icon>add_circle_outline</mat-icon>
-        <h3>Add Fields</h3>
+  <!-- ─── Content Area ────────────────────────────────────────── -->
+  <div class="fg__content" [class.fg__content--with-sidebar]="!isLocked && sidebarExpanded">
+
+    <!-- ─── Sidebar ─────────────────────────────────────────── -->
+    <aside class="fg__sidebar" *ngIf="!isLocked && sidebarExpanded" @slideIn>
+      <div class="fg__sidebar-header">
+        <span class="fg__sidebar-title">Properties</span>
         <button
-          mat-icon-button
+          class="fg__btn fg__btn--small fg__btn--terracotta"
           (click)="openPropertyCreator()"
-          matTooltip="Create new property type"
-          class="create-property-button"
+          matTooltip="Create new property"
         >
           <mat-icon>add</mat-icon>
         </button>
       </div>
-      <div class="field-type-list">
-        <button
+
+      <div class="fg__sidebar-list">
+        <div
           *ngFor="let option of fieldTypeOptions; trackBy: trackByFieldType"
-          mat-stroked-button
-          class="field-type-button"
+          class="fg__sidebar-item"
           draggable="true"
           (dragstart)="onDragStart(option, $event)"
           (dragend)="onDragEnd()"
           [matTooltip]="'Drag to add ' + option.label"
+          matTooltipPosition="right"
         >
-          <mat-icon>{{ option.icon }}</mat-icon>
-          <span>{{ option.label }}</span>
-        </button>
-      </div>
-    </div>
-
-    <!-- Main grid area -->
-    <div
-      class="field-grid"
-      (dragover)="onDragOver($event)"
-      (drop)="onDrop($event)"
-      [class.editable]="!isLocked"
-    >
-      <div
-        *ngFor="let field of fields; trackBy: trackByFieldId"
-        class="field-item"
-        [class.editable]="!isLocked"
-        [attr.draggable]="!isLocked"
-        (dragstart)="onFieldDragStart(field, $event) "
-        (dragend)="onDragEnd()"
-        [style.grid-column]="field.x + ' / span ' + field.width"
-        [style.grid-row]="field.y + ' / span ' + field.height"
-      >
-        <div class="field-handle" *ngIf="!isLocked">
-          <mat-icon>drag_indicator</mat-icon>
+          <div class="fg__sidebar-item-icon" [attr.data-type]="option.type">
+            <mat-icon>{{ option.icon }}</mat-icon>
+          </div>
+          <div class="fg__sidebar-item-info">
+            <span class="fg__sidebar-item-name">{{ option.label }}</span>
+            <span class="fg__sidebar-item-type">{{ option.type }}</span>
+          </div>
+          <mat-icon class="fg__sidebar-item-drag">drag_indicator</mat-icon>
         </div>
 
-        <ng-container [ngSwitch]="getFieldProperty(field)?.type">
-          <app-text-field
-            *ngSwitchCase="FieldPropertyType.Text"
-            [field]="field"
-            [property]="getFieldProperty(field)!"
-            (valueChanged)="onValueChanged($event)">
-          </app-text-field>
+        <div class="fg__sidebar-empty" *ngIf="!fieldTypeOptions.length">
+          <mat-icon>inventory_2</mat-icon>
+          <span>No properties yet</span>
+          <button class="fg__btn fg__btn--small fg__btn--terracotta" (click)="openPropertyCreator()">
+            Create one
+          </button>
+        </div>
+      </div>
+    </aside>
 
-          <app-date-field
-            *ngSwitchCase="FieldPropertyType.Date"
-            [field]="field"
-            [property]="getFieldProperty(field)!"
-            (valueChanged)="onValueChanged($event)">
-          </app-date-field>
+    <!-- ─── Grid ────────────────────────────────────────────── -->
+    <div
+      #gridArea
+      class="fg__grid"
+      [class.fg__grid--drag-over]="isDraggingOver && !isLocked"
+      [style.grid-template-rows]="'repeat(' + gridRows + ', ' + 64 + 'px)'"
+      (dragover)="onDragOver($event)"
+      (dragleave)="onDragLeave($event)"
+      (drop)="onDrop($event)"
+    >
+      <!-- Grid background pattern (edit mode only) -->
+      <div class="fg__grid-bg" *ngIf="!isLocked"></div>
 
-          <app-boolean-field
-            *ngSwitchCase="FieldPropertyType.Boolean"
-            [field]="field"
-            [property]="getFieldProperty(field)!"
-            (valueChanged)="onValueChanged($event)">
-          </app-boolean-field>
+      <!-- Ghost preview -->
+      <div
+        class="fg__ghost"
+        *ngIf="ghost"
+        [ngStyle]="getGhostStyle()"
+      ></div>
 
-          <div *ngSwitchDefault class="unknown-field">Unknown field type</div>
-        </ng-container>
+      <!-- Field cards -->
+      <div
+        *ngFor="let field of fields; trackBy: trackByFieldId"
+        class="fg__card"
+        [class.fg__card--editing]="!isLocked"
+        [class.fg__card--dragging]="draggedField?.id === field.id"
+        [class.fg__card--delete-confirm]="isDeleteConfirming(field.id)"
+        [ngStyle]="getFieldStyle(field)"
+        [attr.draggable]="!isLocked"
+        (dragstart)="onFieldDragStart(field, $event)"
+        (dragend)="onDragEnd()"
+      >
+        <!-- Card header (edit mode) -->
+        <div class="fg__card-header" *ngIf="!isLocked">
+          <mat-icon class="fg__card-drag">drag_indicator</mat-icon>
+          <span class="fg__card-label">{{ getFieldTypeLabel(field) }}</span>
+          <button
+            class="fg__card-delete"
+            [class.fg__card-delete--confirm]="isDeleteConfirming(field.id)"
+            (click)="onDeleteClick(field.id, $event)"
+            [matTooltip]="isDeleteConfirming(field.id) ? 'Click again to confirm' : 'Remove field'"
+          >
+            <mat-icon>{{ isDeleteConfirming(field.id) ? 'warning' : 'close' }}</mat-icon>
+          </button>
+        </div>
 
-        <div class="field-resize-handle" *ngIf="!isLocked"></div>
+        <!-- Field content -->
+        <div class="fg__card-body">
+          <ng-container [ngSwitch]="getFieldProperty(field)?.type">
+            <app-text-field
+              *ngSwitchCase="FieldPropertyType.Text"
+              [field]="field"
+              [property]="getFieldProperty(field)!"
+              (valueChanged)="onValueChanged($event)">
+            </app-text-field>
+
+            <app-date-field
+              *ngSwitchCase="FieldPropertyType.Date"
+              [field]="field"
+              [property]="getFieldProperty(field)!"
+              (valueChanged)="onValueChanged($event)">
+            </app-date-field>
+
+            <app-boolean-field
+              *ngSwitchCase="FieldPropertyType.Boolean"
+              [field]="field"
+              [property]="getFieldProperty(field)!"
+              (valueChanged)="onValueChanged($event)">
+            </app-boolean-field>
+
+            <div *ngSwitchDefault class="fg__unknown">
+              <mat-icon>help_outline</mat-icon>
+              <span>Unknown type</span>
+            </div>
+          </ng-container>
+        </div>
+
+        <!-- Resize handle -->
+        <div
+          class="fg__card-resize"
+          *ngIf="!isLocked"
+          (mousedown)="onResizeStart(field, $event)"
+        >
+          <svg width="10" height="10" viewBox="0 0 10 10">
+            <circle cx="7" cy="3" r="1" fill="currentColor"/>
+            <circle cx="3" cy="7" r="1" fill="currentColor"/>
+            <circle cx="7" cy="7" r="1" fill="currentColor"/>
+          </svg>
+        </div>
       </div>
 
-      <!-- Drop zone indicator -->
-      <div class="drop-zone-indicator" *ngIf="!isLocked && (draggedOption || draggedField)">
-        <mat-icon>{{ draggedOption ? 'add_box' : 'open_with' }}</mat-icon>
-        <p *ngIf="draggedOption">Drop here to add {{ draggedOption.label }}</p>
-        <p *ngIf="draggedField">Drop to reposition field</p>
+      <!-- Empty state -->
+      <div class="fg__empty" *ngIf="!fields.length && isLocked">
+        <mat-icon>grid_view</mat-icon>
+        <p class="fg__empty-title">No fields yet</p>
+        <p class="fg__empty-desc">Click <strong>Edit</strong> to start adding fields to this record</p>
+      </div>
+
+      <!-- Drop prompt (edit mode, no fields) -->
+      <div class="fg__drop-prompt" *ngIf="!fields.length && !isLocked && !isDraggingOver">
+        <mat-icon>swipe_right_alt</mat-icon>
+        <p>Drag properties from the panel to place them here</p>
       </div>
     </div>
   </div>

@@ -1,3 +1,112 @@
-.full-width {
+// ─── Date Field: Warm Workshop Aesthetic ─────────────────────────────
+
+.sf {
   width: 100%;
+}
+
+.sf__label {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-family: var(--ww-font-display);
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--ww-ink-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 4px;
+}
+
+.sf__label-icon {
+  font-size: 12px !important;
+  width: 12px !important;
+  height: 12px !important;
+  color: var(--ww-honey);
+}
+
+.sf__status {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+}
+
+.sf__status-icon {
+  font-size: 12px !important;
+  width: 12px !important;
+  height: 12px !important;
+
+  &--spin {
+    color: var(--ww-honey);
+    animation: spin 1s linear infinite;
+  }
+
+  &--saved {
+    color: var(--ww-sage);
+    animation: fadeInOut 2s ease forwards;
+  }
+
+  &--error {
+    color: var(--ww-rose);
+  }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes fadeInOut {
+  0%   { opacity: 0; transform: scale(0.5); }
+  20%  { opacity: 1; transform: scale(1); }
+  80%  { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+.sf__date-wrap {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.sf__input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: var(--ww-font-body);
+  font-size: 13px;
+  color: var(--ww-ink);
+  padding: 2px 0;
+  border-bottom: 1px solid transparent;
+  cursor: pointer;
+  transition: border-color var(--ww-duration);
+
+  &:focus {
+    border-bottom-color: var(--ww-honey);
+  }
+
+  &::placeholder {
+    color: var(--ww-ink-muted);
+    opacity: 0.5;
+  }
+}
+
+.sf__date-toggle {
+  ::ng-deep .mat-mdc-icon-button {
+    width: 24px !important;
+    height: 24px !important;
+    padding: 2px !important;
+  }
+}
+
+.sf__date-icon {
+  font-size: 16px !important;
+  width: 16px !important;
+  height: 16px !important;
+  color: var(--ww-honey);
+}
+
+.sf--saving .sf__input,
+.sf--saving .sf__date-toggle {
+  opacity: 0.7;
+  pointer-events: none;
 }

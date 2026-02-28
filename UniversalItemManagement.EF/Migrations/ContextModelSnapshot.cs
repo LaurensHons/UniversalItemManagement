@@ -31,8 +31,7 @@ namespace UniversalItemManagement.EF.Migrations
                     b.Property<Guid?>("CreatedById")
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime?>("CreatedOn")
-                        .IsRequired()
+                    b.Property<DateTime>("CreatedOn")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
                         .HasDefaultValueSql("NOW()");
@@ -43,8 +42,7 @@ namespace UniversalItemManagement.EF.Migrations
                     b.Property<Guid?>("ModifiedById")
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime?>("ModifiedOn")
-                        .IsRequired()
+                    b.Property<DateTime>("ModifiedOn")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
                         .HasDefaultValueSql("NOW()");
@@ -91,8 +89,7 @@ namespace UniversalItemManagement.EF.Migrations
                     b.Property<Guid?>("CreatedById")
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime?>("CreatedOn")
-                        .IsRequired()
+                    b.Property<DateTime>("CreatedOn")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
                         .HasDefaultValueSql("NOW()");
@@ -100,8 +97,7 @@ namespace UniversalItemManagement.EF.Migrations
                     b.Property<Guid?>("ModifiedById")
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime?>("ModifiedOn")
-                        .IsRequired()
+                    b.Property<DateTime>("ModifiedOn")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
                         .HasDefaultValueSql("NOW()");
@@ -123,95 +119,44 @@ namespace UniversalItemManagement.EF.Migrations
                     b.ToTable("FieldProperty");
                 });
 
-            modelBuilder.Entity("UniversalItemManagement.EF.Domain.Models.Entities.Fields.Values.BooleanValue", b =>
-                {
-                    b.Property<Guid>("ValueId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<bool>("Value")
-                        .HasColumnType("boolean");
-
-                    b.HasKey("ValueId");
-
-                    b.ToTable("BooleanValue", (string)null);
-                });
-
-            modelBuilder.Entity("UniversalItemManagement.EF.Domain.Models.Entities.Fields.Values.DateValue", b =>
-                {
-                    b.Property<Guid>("ValueId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("Value")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("ValueId");
-
-                    b.ToTable("DateValue", (string)null);
-                });
-
-            modelBuilder.Entity("UniversalItemManagement.EF.Domain.Models.Entities.Fields.Values.FieldValue", b =>
+            modelBuilder.Entity("UniversalItemManagement.EF.Domain.Models.Entities.Fields.FieldValue", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("BooleanValueId")
-                        .HasColumnType("uuid");
+                    b.Property<bool?>("BooleanValue")
+                        .HasColumnType("boolean");
 
                     b.Property<Guid?>("CreatedById")
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime?>("CreatedOn")
-                        .IsRequired()
+                    b.Property<DateTime>("CreatedOn")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
                         .HasDefaultValueSql("NOW()");
 
-                    b.Property<Guid?>("DateValueId")
-                        .HasColumnType("uuid");
+                    b.Property<DateTime?>("DateValue")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid?>("ModifiedById")
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime?>("ModifiedOn")
-                        .IsRequired()
+                    b.Property<DateTime>("ModifiedOn")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
                         .HasDefaultValueSql("NOW()");
 
-                    b.Property<Guid?>("TextValueId")
-                        .HasColumnType("uuid");
+                    b.Property<string>("TextValue")
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("BooleanValueId");
-
                     b.HasIndex("CreatedById");
-
-                    b.HasIndex("DateValueId");
 
                     b.HasIndex("ModifiedById");
 
-                    b.HasIndex("TextValueId");
-
                     b.ToTable("FieldValues");
-                });
-
-            modelBuilder.Entity("UniversalItemManagement.EF.Domain.Models.Entities.Fields.Values.TextValue", b =>
-                {
-                    b.Property<Guid>("ValueId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Value")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("ValueId");
-
-                    b.ToTable("TextValue", (string)null);
                 });
 
             modelBuilder.Entity("UniversalItemManagement.EF.Domain.Models.Entities.Record", b =>
@@ -223,8 +168,7 @@ namespace UniversalItemManagement.EF.Migrations
                     b.Property<Guid?>("CreatedById")
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime?>("CreatedOn")
-                        .IsRequired()
+                    b.Property<DateTime>("CreatedOn")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
                         .HasDefaultValueSql("NOW()");
@@ -236,8 +180,7 @@ namespace UniversalItemManagement.EF.Migrations
                     b.Property<Guid?>("ModifiedById")
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime?>("ModifiedOn")
-                        .IsRequired()
+                    b.Property<DateTime>("ModifiedOn")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
                         .HasDefaultValueSql("NOW()");
@@ -257,10 +200,10 @@ namespace UniversalItemManagement.EF.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("ddcc75fb-a34b-4a30-b408-002443ddfbdb"),
-                            CreatedOn = new DateTime(2026, 2, 16, 19, 54, 7, 699, DateTimeKind.Utc).AddTicks(9106),
+                            Id = new Guid("4b8d7f95-6fce-4ce2-996b-6913db9b4145"),
+                            CreatedOn = new DateTime(2026, 2, 28, 20, 19, 21, 254, DateTimeKind.Utc).AddTicks(7244),
                             Description = "Bla",
-                            ModifiedOn = new DateTime(2026, 2, 16, 19, 54, 7, 699, DateTimeKind.Utc).AddTicks(9372),
+                            ModifiedOn = new DateTime(2026, 2, 28, 20, 19, 21, 254, DateTimeKind.Utc).AddTicks(7430),
                             Name = "Test"
                         });
                 });
@@ -326,7 +269,7 @@ namespace UniversalItemManagement.EF.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("UniversalItemManagement.EF.Domain.Models.Entities.Fields.Values.FieldValue", "FieldValue")
+                    b.HasOne("UniversalItemManagement.EF.Domain.Models.Entities.Fields.FieldValue", "FieldValue")
                         .WithMany()
                         .HasForeignKey("ValueId")
                         .OnDelete(DeleteBehavior.Cascade);
@@ -357,40 +300,19 @@ namespace UniversalItemManagement.EF.Migrations
                     b.Navigation("ModifiedBy");
                 });
 
-            modelBuilder.Entity("UniversalItemManagement.EF.Domain.Models.Entities.Fields.Values.FieldValue", b =>
+            modelBuilder.Entity("UniversalItemManagement.EF.Domain.Models.Entities.Fields.FieldValue", b =>
                 {
-                    b.HasOne("UniversalItemManagement.EF.Domain.Models.Entities.Fields.Values.BooleanValue", "BooleanValue")
-                        .WithMany()
-                        .HasForeignKey("BooleanValueId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
                     b.HasOne("UniversalItemManagement.EF.Domain.Models.Entities.User", "CreatedBy")
                         .WithMany()
                         .HasForeignKey("CreatedById");
-
-                    b.HasOne("UniversalItemManagement.EF.Domain.Models.Entities.Fields.Values.DateValue", "DateValue")
-                        .WithMany()
-                        .HasForeignKey("DateValueId")
-                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("UniversalItemManagement.EF.Domain.Models.Entities.User", "ModifiedBy")
                         .WithMany()
                         .HasForeignKey("ModifiedById");
 
-                    b.HasOne("UniversalItemManagement.EF.Domain.Models.Entities.Fields.Values.TextValue", "TextValue")
-                        .WithMany()
-                        .HasForeignKey("TextValueId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.Navigation("BooleanValue");
-
                     b.Navigation("CreatedBy");
 
-                    b.Navigation("DateValue");
-
                     b.Navigation("ModifiedBy");
-
-                    b.Navigation("TextValue");
                 });
 
             modelBuilder.Entity("UniversalItemManagement.EF.Domain.Models.Entities.Record", b =>

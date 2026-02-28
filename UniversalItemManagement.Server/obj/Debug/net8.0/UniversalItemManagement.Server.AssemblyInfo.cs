@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("UniversalItemManagement.Server")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+1eca8c5fa1215c71ec5620bc440749f438989a0e")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+578097965e5a6c6c60c354d7b4c4834c3ae49acd")]
 [assembly: System.Reflection.AssemblyProductAttribute("UniversalItemManagement.Server")]
 [assembly: System.Reflection.AssemblyTitleAttribute("UniversalItemManagement.Server")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

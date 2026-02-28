@@ -1,32 +1,37 @@
-<h2 mat-dialog-title>Create New Field Property</h2>
+<div class="pcd">
+  <div class="pcd__header">
+    <div class="pcd__header-icon">
+      <mat-icon>add_circle</mat-icon>
+    </div>
+    <h2 class="pcd__title">New Field Property</h2>
+  </div>
 
-<mat-dialog-content>
-  <form [formGroup]="propertyForm" class="property-form">
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Property Name</mat-label>
-      <input matInput formControlName="name" placeholder="e.g., Email, Age, Status" />
-      <mat-error *ngIf="propertyForm.get('name')?.hasError('required')">
-        Property name is required
-      </mat-error>
-    </mat-form-field>
+  <mat-dialog-content>
+    <form [formGroup]="propertyForm" class="pcd__form">
+      <mat-form-field appearance="outline" class="no-subscript-wrapper pcd__field">
+        <mat-label>Property Name</mat-label>
+        <input matInput formControlName="name" placeholder="e.g., Email, Age, Status" />
+      </mat-form-field>
 
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Property Type</mat-label>
-      <mat-select formControlName="type">
-        <mat-option *ngFor="let type of propertyTypes" [value]="type.value">
-          <div class="type-option">
-            <mat-icon>{{ type.icon }}</mat-icon>
-            <span>{{ type.label }}</span>
-          </div>
-        </mat-option>
-      </mat-select>
-    </mat-form-field>
-  </form>
-</mat-dialog-content>
+      <mat-form-field appearance="outline" class="no-subscript-wrapper pcd__field">
+        <mat-label>Property Type</mat-label>
+        <mat-select formControlName="type">
+          <mat-option *ngFor="let type of propertyTypes" [value]="type.value">
+            <div class="pcd__type-option">
+              <mat-icon>{{ type.icon }}</mat-icon>
+              <span>{{ type.label }}</span>
+            </div>
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </form>
+  </mat-dialog-content>
 
-<mat-dialog-actions align="end">
-  <button mat-button (click)="onCancel()">Cancel</button>
-  <button mat-raised-button color="primary" (click)="onSubmit()" [disabled]="!propertyForm.valid">
-    Create Property
-  </button>
-</mat-dialog-actions>
+  <div class="pcd__actions">
+    <button class="pcd__btn" (click)="onCancel()">Cancel</button>
+    <button class="pcd__btn pcd__btn--primary" (click)="onSubmit()" [disabled]="!propertyForm.valid">
+      <mat-icon>add</mat-icon>
+      Create
+    </button>
+  </div>
+</div>

@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { MatIconModule } from '@angular/material/icon';
 import { Field } from 'src/app/core/models/field.model';
 import { FieldProperty } from 'src/app/core/models/field-property.model';
-import { FieldValue } from 'src/app/core/models/field-value.model';
-import { FieldValueFacade } from 'src/app/core/domain/store/fields/field-value.state';
-import { filter, switchMap, tap } from 'rxjs';
+import { FieldFacade } from 'src/app/core/domain/store/fields/field.state';
+
+type SaveStatus = 'idle' | 'saving' | 'saved' | 'error';
 
 @Component({
   selector: 'app-text-field',
@@ -17,6 +18,7 @@ import { filter, switchMap, tap } from 'rxjs';
     ReactiveFormsModule,
     MatFormFieldModule,
     MatInputModule,
+    MatIconModule,
   ],
   templateUrl: './text-field.component.html',
   styleUrls: ['./text-field.component.scss'],
@@ -24,77 +26,51 @@ import { filter, switchMap, tap } from 'rxjs';
 export class TextFieldComponent implements OnInit, OnChanges {
   @Input() field!: Field;
   @Input() property!: FieldProperty;
-  @Output() valueChanged = new EventEmitter<{ fieldId: string; valueId: string }>();
+  @Output() valueChanged = new EventEmitter<Field>();
 
   textControl = new FormControl('');
-  private currentFieldValue?: FieldValue;
+  status: SaveStatus = 'idle';
 
-  constructor(private fieldValueFacade: FieldValueFacade) {}
+  private savedTimeout: ReturnType<typeof setTimeout> | null = null;
+
+  constructor(private fieldFacade: FieldFacade) {}
 
   ngOnInit(): void {
     this.loadValue();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    // Reload value when field's valueId changes
     if (changes['field'] && !changes['field'].firstChange) {
-      const previousField = changes['field'].previousValue as Field;
-      const currentField = changes['field'].currentValue as Field;
-
-      // Only reload if valueId changed
-      if (previousField?.valueId !== currentField?.valueId) {
-        this.loadValue();
-      }
+      this.loadValue();
     }
   }
 
   private loadValue(): void {
-    // Load value if exists
-    if (this.field.valueId) {
-      this.fieldValueFacade.getEntity(this.field.valueId).pipe(
-        tap((fieldValue: FieldValue) => {
-          this.currentFieldValue = fieldValue;
-          this.textControl.setValue(fieldValue.textValue?.value ?? '', { emitEvent: false });
-        })
-      ).subscribe();
-    } else {
-      // Clear value if no valueId
-      this.currentFieldValue = undefined;
-      this.textControl.setValue('', { emitEvent: false });
-    }
+    this.textControl.setValue(this.field.textValue ?? '', { emitEvent: false });
   }
 
   onValueChange(): void {
     const newValue = this.textControl.value || '';
+    if (newValue === (this.field.textValue ?? '')) return;
 
-    if (this.currentFieldValue && this.currentFieldValue.textValue) {
-      // Update existing text value within the field value
-      const updatedValue = new FieldValue({
-        ...this.currentFieldValue,
-        textValue: {
-          ...this.currentFieldValue.textValue,
-          value: newValue
-        }
-      });
+    this.status = 'saving';
+    const updatedField = new Field({ ...this.field, textValue: newValue });
 
-      this.fieldValueFacade.updateEntity(updatedValue).subscribe((savedValue: FieldValue) => {
-        console.log('Text value updated:', savedValue);
-        this.currentFieldValue = savedValue;
-      });
-    } else {
-      // Create new field value with text value
-      const newFieldValue = new FieldValue({
-        textValue: {
-          valueId: crypto.randomUUID(),
-          value: newValue
-        }
-      } as FieldValue);
+    this.fieldFacade.updateEntity(updatedField).subscribe({
+      next: (savedField: Field) => {
+        this.status = 'saved';
+        this.valueChanged.emit(savedField);
+        this.clearSavedStatus();
+      },
+      error: () => {
+        this.status = 'error';
+        this.clearSavedStatus();
+      },
+    });
+  }
 
-      this.fieldValueFacade.addEntity(newFieldValue).subscribe((savedValue: FieldValue) => {
-        console.log('Text value created:', savedValue);
-        this.currentFieldValue = savedValue;
-        this.valueChanged.emit({ fieldId: this.field.id, valueId: savedValue.id });
-      });
-    }
+  private clearSavedStatus(): void {
+    if (this.savedTimeout) clearTimeout(this.savedTimeout);
+    this.savedTimeout = setTimeout(() => { this.status = 'idle'; }, 2500);
   }
 }

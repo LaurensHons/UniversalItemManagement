@@ -45,9 +45,10 @@ builder.Services.AddCors(options =>
     options.AddPolicy(name: "FrontEndUI", policy =>
     {
         policy.WithOrigins(
-            "https://127.0.0.1:63820", 
+            "https://127.0.0.1:63820",
             "https://localhost:63820",
-            "http://localhost:5232")
+            "http://localhost:5232",
+            "http://localhost:4200")
         .AllowAnyMethod()
         .AllowAnyHeader()
         .AllowCredentials();
@@ -56,6 +57,9 @@ builder.Services.AddCors(options =>
 
 
 var app = builder.Build();
+
+// Global exception handling - must be first in pipeline
+app.UseExceptionHandling();
 
 app.UseDefaultFiles();
 app.UseStaticFiles();

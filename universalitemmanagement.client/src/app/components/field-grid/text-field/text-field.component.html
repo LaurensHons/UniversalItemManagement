@@ -1,9 +1,19 @@
-<mat-form-field appearance="outline" class="full-width">
-  <mat-label>{{ property.name }}</mat-label>
+<div class="sf sf--text" [class.sf--saving]="status === 'saving'">
+  <label class="sf__label">
+    <mat-icon class="sf__label-icon">notes</mat-icon>
+    {{ property?.name }}
+    <span class="sf__status" *ngIf="status !== 'idle'">
+      <mat-icon *ngIf="status === 'saving'" class="sf__status-icon sf__status-icon--spin">sync</mat-icon>
+      <mat-icon *ngIf="status === 'saved'" class="sf__status-icon sf__status-icon--saved">check_circle</mat-icon>
+      <mat-icon *ngIf="status === 'error'" class="sf__status-icon sf__status-icon--error">error</mat-icon>
+    </span>
+  </label>
   <input
-    matInput
+    class="sf__input"
+    type="text"
     [formControl]="textControl"
     (blur)="onValueChange()"
-    placeholder="Enter {{ property.name }}"
+    (keydown.enter)="onValueChange()"
+    [placeholder]="'Enter ' + (property?.name ?? 'value')"
   />
-</mat-form-field>
+</div>

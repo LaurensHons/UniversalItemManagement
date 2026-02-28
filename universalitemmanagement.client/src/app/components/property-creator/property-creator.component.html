@@ -1,96 +1,84 @@
-<div class="property-creator-container">
-  <mat-card>
-    <mat-card-header>
-      <mat-card-title>Create Field Properties</mat-card-title>
-      <mat-card-subtitle>Define field types that can be used in records</mat-card-subtitle>
-    </mat-card-header>
+<div class="pc">
+  <div class="pc__header">
+    <div class="pc__header-icon">
+      <mat-icon>tune</mat-icon>
+    </div>
+    <div class="pc__header-text">
+      <h2 class="pc__title">Field Properties</h2>
+      <p class="pc__subtitle">Define field types that can be used across records</p>
+    </div>
+  </div>
 
-    <mat-card-content>
-      <form [formGroup]="form" (ngSubmit)="createProperty()">
-        <div class="form-row">
-          <mat-form-field appearance="outline" class="full-width">
-            <mat-label>Property Name</mat-label>
-            <input
-              matInput
-              formControlName="name"
-              placeholder="Enter property name (e.g., 'Email', 'Birth Date')"
-            />
-            <mat-error *ngIf="form.get('name')?.hasError('required')">
-              Name is required
-            </mat-error>
-          </mat-form-field>
+  <!-- ─── Create Form ────────────────────────────────────────── -->
+  <div class="pc__panel">
+    <div class="pc__panel-toolbar">
+      <span class="pc__panel-label">New Property</span>
+    </div>
+    <form class="pc__form" [formGroup]="form" (ngSubmit)="createProperty()">
+      <mat-form-field appearance="outline" class="no-subscript-wrapper pc__form-field">
+        <mat-label>Property Name</mat-label>
+        <input matInput formControlName="name" placeholder="e.g., Email, Birth Date, Active" />
+      </mat-form-field>
 
-          <mat-form-field appearance="outline" class="full-width">
-            <mat-label>Field Type</mat-label>
-            <mat-select formControlName="type">
-              <mat-option *ngFor="let type of propertyTypes" [value]="type">
-                {{ type }}
-              </mat-option>
-            </mat-select>
-            <mat-error *ngIf="form.get('type')?.hasError('required')">
-              Type is required
-            </mat-error>
-          </mat-form-field>
+      <mat-form-field appearance="outline" class="no-subscript-wrapper pc__form-field pc__form-field--type">
+        <mat-label>Type</mat-label>
+        <mat-select formControlName="type">
+          <mat-option *ngFor="let type of propertyTypes" [value]="type">
+            {{ type }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
 
-          <button
-            mat-raised-button
-            color="primary"
-            type="submit"
-            class="add-button"
-          >
-            <mat-icon>add</mat-icon>
-            Add Property
-          </button>
-        </div>
-      </form>
+      <button class="pc__btn pc__btn--primary" type="submit">
+        <mat-icon>add</mat-icon>
+        <span>Add</span>
+      </button>
+    </form>
+  </div>
 
-      <div class="properties-list" *ngIf="properties.length > 0">
-        <h3>Created Properties</h3>
-        <table mat-table [dataSource]="properties" class="properties-table">
-          <ng-container matColumnDef="name">
-            <th mat-header-cell *matHeaderCellDef>Name</th>
-            <td mat-cell *matCellDef="let property">{{ property.name }}</td>
-          </ng-container>
+  <!-- ─── Properties Table ───────────────────────────────────── -->
+  <div class="pc__panel" *ngIf="properties.length > 0">
+    <div class="pc__panel-toolbar">
+      <span class="pc__panel-label">Created Properties</span>
+      <span class="pc__panel-count">{{ properties.length }}</span>
+    </div>
 
-          <ng-container matColumnDef="type">
-            <th mat-header-cell *matHeaderCellDef>Type</th>
-            <td mat-cell *matCellDef="let property">
-              <span class="type-badge" [class]="'type-' + property.type.toLowerCase()">
+    <div class="pc__table-wrap">
+      <table class="pc__table">
+        <thead>
+          <tr>
+            <th class="pc__th">Name</th>
+            <th class="pc__th">Type</th>
+            <th class="pc__th pc__th--actions"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="pc__row" *ngFor="let property of properties">
+            <td class="pc__td pc__td--name">{{ property.name }}</td>
+            <td class="pc__td">
+              <span class="pc__badge" [attr.data-type]="property.type.toLowerCase()">
                 {{ property.type }}
               </span>
             </td>
-          </ng-container>
-
-          <ng-container matColumnDef="actions">
-            <th mat-header-cell *matHeaderCellDef>Actions</th>
-            <td mat-cell *matCellDef="let property">
+            <td class="pc__td pc__td--actions">
               <button
-                mat-icon-button
-                color="warn"
+                class="pc__icon-btn pc__icon-btn--danger"
                 (click)="deleteProperty(property)"
-                aria-label="Delete property"
+                matTooltip="Delete property"
               >
-                <mat-icon>delete</mat-icon>
+                <mat-icon>close</mat-icon>
               </button>
             </td>
-          </ng-container>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
 
-          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-          <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
-        </table>
-      </div>
-    </mat-card-content>
-
-    <mat-card-actions *ngIf="properties.length > 0">
-      <button
-        mat-raised-button
-        color="accent"
-        (click)="saveProperties()"
-        class="save-all-button"
-      >
-        <mat-icon>save</mat-icon>
-        Save All Properties
-      </button>
-    </mat-card-actions>
-  </mat-card>
+  <!-- ─── Empty State ────────────────────────────────────────── -->
+  <div class="pc__empty" *ngIf="properties.length === 0">
+    <mat-icon>inventory_2</mat-icon>
+    <p class="pc__empty-title">No properties yet</p>
+    <p class="pc__empty-desc">Use the form above to create your first field property</p>
+  </div>
 </div>

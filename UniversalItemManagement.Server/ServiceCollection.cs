@@ -3,9 +3,9 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
 using UniversalItemManagement.EF.Domain.Models.Entities;
 using UniversalItemManagement.EF.Domain.Models.Entities.Fields;
-using UniversalItemManagement.EF.Domain.Models.Entities.Fields.Values;
 using UniversalItemManagement.EF.Domain.Services.Contracts;
 using UniversalItemManagement.Server.Hubs;
+using UniversalItemManagement.Server.Mappers;
 using UniversalItemManagement.Server.Middleware;
 using UniversalItemManagement.Server.Services;
 using UniversalItemManagement.Server.Services.Contracts;
@@ -27,6 +27,16 @@ namespace UniversalItemManagement.Server
             services.AddTransient<EntityHub>();
             services.AddTransient<EntitySignalService>();
             services.AddScoped<HubConnectionService>();
+
+            // Mappers (used by controllers to transform entities to DTOs)
+            services.AddTransient<FieldMapper>();
+            services.AddTransient<FieldPropertyMapper>();
+            services.AddTransient<RecordMapper>();
+
+            // Domain services
+            services.AddScoped<FieldValueService>();
+            services.AddScoped<FieldValidationService>();
+
             services.AddTransient<IEntityService<Record>, EntityUpdatedService<Record>>(
                 (provider) =>
                     new EntityUpdatedService<Record>(

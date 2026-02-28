@@ -5,9 +5,15 @@ export class Field extends Entity {
   y!: number;
   width!: number;
   height!: number;
-  valueId?: string;
-  propertyId!: string;
+  fieldPropertyId!: string;
+  fieldPropertyName!: string;
+  fieldPropertyType!: string;
   recordId!: string;
+  textValue?: string | null;
+  booleanValue?: boolean | null;
+  dateValue?: Date | null;
+  valueId?: string | null;
+  hasValue!: boolean;
 
   constructor(field: Field) {
     super(field);

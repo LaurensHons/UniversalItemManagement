@@ -1,11 +1,21 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import {
+  Component,
+  Input,
+  Output,
+  EventEmitter,
+  ElementRef,
+  ViewChild,
+  OnDestroy,
+  ChangeDetectorRef,
+  NgZone,
+} from '@angular/core';
+import { trigger, transition, style, animate } from '@angular/animations';
 import { CommonModule } from '@angular/common';
 import { Field } from 'src/app/core/models/field.model';
-import { FieldProperty } from 'src/app/core/models/field-property.model';
+import { FieldProperty, FieldPropertyType } from 'src/app/core/models/field-property.model';
 import { TextFieldComponent } from './text-field/text-field.component';
 import { DateFieldComponent } from './date-field/date-field.component';
 import { BooleanFieldComponent } from './boolean-field/boolean-field.component';
-import { FieldPropertyType } from 'src/app/core/models/field-property.model';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -13,12 +23,31 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { FieldPropertyFacade } from 'src/app/core/domain/store/fields/field-property.state';
 import { PropertyCreatorDialogComponent } from './property-creator-dialog/property-creator-dialog.component';
 
-interface FieldTypeOption {
+export interface FieldTypeOption {
   propertyId: string;
   type: FieldPropertyType;
   label: string;
   icon: string;
 }
+
+interface GridGhost {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
+interface ResizeState {
+  field: Field;
+  startX: number;
+  startY: number;
+  startWidth: number;
+  startHeight: number;
+}
+
+const GRID_COLS = 12;
+const GRID_ROW_HEIGHT = 64;
+const GRID_GAP = 12;
 
 @Component({
   selector: 'app-field-grid',
@@ -35,47 +64,405 @@ interface FieldTypeOption {
   ],
   templateUrl: './field-grid.component.html',
   styleUrls: ['./field-grid.component.scss'],
+  animations: [
+    trigger('slideIn', [
+      transition(':enter', [
+        style({ width: 0, opacity: 0 }),
+        animate('250ms cubic-bezier(0.22, 1, 0.36, 1)', style({ width: '220px', opacity: 1 })),
+      ]),
+      transition(':leave', [
+        animate('200ms cubic-bezier(0.22, 1, 0.36, 1)', style({ width: 0, opacity: 0 })),
+      ]),
+    ]),
+  ],
 })
-export class FieldGridComponent {
+export class FieldGridComponent implements OnDestroy {
   @Input() fields: Field[] = [];
   @Input() fieldProperties: Map<string, FieldProperty> = new Map();
   @Output() fieldAdded = new EventEmitter<{ propertyId: string; x: number; y: number; width: number; height: number }>();
   @Output() fieldMoved = new EventEmitter<{ fieldId: string; x: number; y: number }>();
-  @Output() fieldValueChanged = new EventEmitter<{ fieldId: string; valueId: string }>();
+  @Output() fieldResized = new EventEmitter<{ fieldId: string; width: number; height: number }>();
+  @Output() fieldValueChanged = new EventEmitter<Field>();
+  @Output() fieldDeleted = new EventEmitter<string>();
+
+  @ViewChild('gridArea', { static: false }) gridArea!: ElementRef<HTMLElement>;
 
   FieldPropertyType = FieldPropertyType;
   isLocked = true;
+  sidebarExpanded = true;
+
+  // Drag state
   draggedOption: FieldTypeOption | null = null;
   draggedField: Field | null = null;
-  draggedElement: HTMLElement | null = null;
+  isDraggingOver = false;
+  ghost: GridGhost | null = null;
+
+  // Resize state
+  resizeState: ResizeState | null = null;
+
+  // Delete confirmation
+  deleteConfirmId: string | null = null;
 
   fieldTypeOptions: FieldTypeOption[] = [];
 
+  private boundMouseMove: ((e: MouseEvent) => void) | null = null;
+  private boundMouseUp: ((e: MouseEvent) => void) | null = null;
+  private deleteConfirmTimeout: ReturnType<typeof setTimeout> | null = null;
+
   constructor(
     private fieldPropertyFacade: FieldPropertyFacade,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private cdr: ChangeDetectorRef,
+    private zone: NgZone
   ) {}
 
-  getFieldProperty(field: Field): FieldProperty | undefined {
-    return this.fieldProperties.get(field.propertyId);
+  ngOnDestroy(): void {
+    this.cleanupListeners();
+    if (this.deleteConfirmTimeout) {
+      clearTimeout(this.deleteConfirmTimeout);
+    }
   }
 
-  trackByFieldId(index: number, field: Field): string {
+  // ─── Public API ───────────────────────────────────────────────
+
+  getFieldProperty(field: Field): FieldProperty | undefined {
+    return this.fieldProperties.get(field.fieldPropertyId);
+  }
+
+  getFieldTypeIcon(field: Field): string {
+    const prop = this.getFieldProperty(field);
+    if (!prop) return 'help_outline';
+    return this.getIconForType(prop.type);
+  }
+
+  getFieldTypeLabel(field: Field): string {
+    const prop = this.getFieldProperty(field);
+    return prop?.name ?? 'Unknown';
+  }
+
+  trackByFieldId(_index: number, field: Field): string {
     return field.id;
   }
 
-  trackByFieldType(index: number, option: FieldTypeOption): string {
+  trackByFieldType(_index: number, option: FieldTypeOption): string {
     return option.propertyId;
   }
 
+  // ─── Lock/Unlock ──────────────────────────────────────────────
+
   toggleLock(): void {
     this.isLocked = !this.isLocked;
-
-    // Fetch all field properties when unlocking
+    this.deleteConfirmId = null;
     if (!this.isLocked) {
       this.loadAllFieldProperties();
     }
   }
+
+  toggleSidebar(): void {
+    this.sidebarExpanded = !this.sidebarExpanded;
+  }
+
+  // ─── Grid Calculations ────────────────────────────────────────
+
+  get gridRows(): number {
+    if (!this.fields.length) return 6;
+    const maxRow = Math.max(...this.fields.map(f => f.y + f.height));
+    return Math.max(6, maxRow + 2);
+  }
+
+  getFieldStyle(field: Field): Record<string, string> {
+    return {
+      'grid-column': `${field.x} / span ${field.width}`,
+      'grid-row': `${field.y} / span ${field.height}`,
+    };
+  }
+
+  getGhostStyle(): Record<string, string> {
+    if (!this.ghost) return {};
+    return {
+      'grid-column': `${this.ghost.x} / span ${this.ghost.width}`,
+      'grid-row': `${this.ghost.y} / span ${this.ghost.height}`,
+    };
+  }
+
+  private pixelToGrid(clientX: number, clientY: number): { col: number; row: number } {
+    if (!this.gridArea) return { col: 1, row: 1 };
+
+    const rect = this.gridArea.nativeElement.getBoundingClientRect();
+    const relX = clientX - rect.left;
+    const relY = clientY - rect.top;
+
+    const colWidth = (rect.width + GRID_GAP) / GRID_COLS;
+    const rowHeight = GRID_ROW_HEIGHT + GRID_GAP;
+
+    const col = Math.max(1, Math.min(GRID_COLS, Math.floor(relX / colWidth) + 1));
+    const row = Math.max(1, Math.floor(relY / rowHeight) + 1);
+
+    return { col, row };
+  }
+
+  private hasCollision(x: number, y: number, w: number, h: number, excludeId?: string): boolean {
+    return this.fields.some(f => {
+      if (excludeId && f.id === excludeId) return false;
+      return !(x + w <= f.x || f.x + f.width <= x || y + h <= f.y || f.y + f.height <= y);
+    });
+  }
+
+  // ─── Sidebar Drag Start ───────────────────────────────────────
+
+  onDragStart(option: FieldTypeOption, event: DragEvent): void {
+    this.draggedOption = option;
+    this.draggedField = null;
+
+    if (event.dataTransfer) {
+      event.dataTransfer.effectAllowed = 'copy';
+      event.dataTransfer.setData('text/plain', option.propertyId);
+
+      const dragImage = this.createDragImage(option);
+      document.body.appendChild(dragImage);
+      event.dataTransfer.setDragImage(dragImage, 60, 20);
+      requestAnimationFrame(() => document.body.removeChild(dragImage));
+    }
+  }
+
+  // ─── Field Drag Start ────────────────────────────────────────
+
+  onFieldDragStart(field: Field, event: DragEvent): void {
+    if (this.isLocked) return;
+    event.stopPropagation();
+
+    this.draggedOption = null;
+
+    if (event.dataTransfer) {
+      event.dataTransfer.effectAllowed = 'move';
+      event.dataTransfer.setData('text/plain', field.id);
+    }
+
+    // Defer so the browser finishes initializing the drag before
+    // Angular applies the --dragging class (pointer-events:none + transform)
+    requestAnimationFrame(() => {
+      this.draggedField = field;
+      this.cdr.markForCheck();
+    });
+  }
+
+  onDragEnd(): void {
+    console.log("dragstop")
+    this.draggedOption = null;
+    this.draggedField = null;
+    this.isDraggingOver = false;
+    this.ghost = null;
+  }
+
+  // ─── Grid Drop Zone ──────────────────────────────────────────
+
+  onDragOver(event: DragEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDraggingOver = true;
+
+    if (event.dataTransfer) {
+      event.dataTransfer.dropEffect = this.draggedField ? 'move' : 'copy';
+    }
+
+    const { col, row } = this.pixelToGrid(event.clientX, event.clientY);
+
+    if (this.draggedOption) {
+      const w = this.getDefaultWidth(this.draggedOption.type);
+      const clampedX = Math.min(col, GRID_COLS - w + 1);
+      this.ghost = { x: clampedX, y: row, width: w, height: 1 };
+    } else if (this.draggedField) {
+      const clampedX = Math.min(col, GRID_COLS - this.draggedField.width + 1);
+      this.ghost = { x: clampedX, y: row, width: this.draggedField.width, height: this.draggedField.height };
+    }
+  }
+
+  onDragLeave(event: DragEvent): void {
+    const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
+    const inside =
+      event.clientX >= rect.left &&
+      event.clientX <= rect.right &&
+      event.clientY >= rect.top &&
+      event.clientY <= rect.bottom;
+    if (!inside) {
+      this.isDraggingOver = false;
+      this.ghost = null;
+    }
+  }
+
+  onDrop(event: DragEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+
+    const { col, row } = this.pixelToGrid(event.clientX, event.clientY);
+
+    if (this.draggedOption) {
+      const w = this.getDefaultWidth(this.draggedOption.type);
+      const x = Math.max(1, Math.min(col, GRID_COLS - w + 1));
+      const y = Math.max(1, row);
+
+      if (!this.hasCollision(x, y, w, 1)) {
+        this.fieldAdded.emit({
+          propertyId: this.draggedOption.propertyId,
+          x,
+          y,
+          width: w,
+          height: 1,
+        });
+      }
+    } else if (this.draggedField) {
+      const x = Math.max(1, Math.min(col, GRID_COLS - this.draggedField.width + 1));
+      const y = Math.max(1, row);
+
+      if (x !== this.draggedField.x || y !== this.draggedField.y) {
+        if (!this.hasCollision(x, y, this.draggedField.width, this.draggedField.height, this.draggedField.id)) {
+          this.fieldMoved.emit({ fieldId: this.draggedField.id, x, y });
+        }
+      }
+    }
+
+    this.onDragEnd();
+  }
+
+  // ─── Resize ───────────────────────────────────────────────────
+
+  onResizeStart(field: Field, event: MouseEvent): void {
+    if (this.isLocked) return;
+    event.preventDefault();
+    event.stopPropagation();
+
+    this.resizeState = {
+      field,
+      startX: event.clientX,
+      startY: event.clientY,
+      startWidth: field.width,
+      startHeight: field.height,
+    };
+
+    this.zone.runOutsideAngular(() => {
+      this.boundMouseMove = (e: MouseEvent) => this.onResizeMove(e);
+      this.boundMouseUp = (e: MouseEvent) => this.onResizeEnd(e);
+      document.addEventListener('mousemove', this.boundMouseMove);
+      document.addEventListener('mouseup', this.boundMouseUp);
+    });
+  }
+
+  private onResizeMove(event: MouseEvent): void {
+    if (!this.resizeState || !this.gridArea) return;
+
+    const rect = this.gridArea.nativeElement.getBoundingClientRect();
+    const colWidth = (rect.width + GRID_GAP) / GRID_COLS;
+    const rowHeight = GRID_ROW_HEIGHT + GRID_GAP;
+
+    const dx = event.clientX - this.resizeState.startX;
+    const dy = event.clientY - this.resizeState.startY;
+
+    const deltaCols = Math.round(dx / colWidth);
+    const deltaRows = Math.round(dy / rowHeight);
+
+    const newWidth = Math.max(1, Math.min(
+      this.resizeState.startWidth + deltaCols,
+      GRID_COLS - this.resizeState.field.x + 1
+    ));
+    const newHeight = Math.max(1, this.resizeState.startHeight + deltaRows);
+
+    this.zone.run(() => {
+      this.ghost = {
+        x: this.resizeState!.field.x,
+        y: this.resizeState!.field.y,
+        width: newWidth,
+        height: newHeight,
+      };
+      this.cdr.markForCheck();
+    });
+  }
+
+  private onResizeEnd(_event: MouseEvent): void {
+    this.cleanupListeners();
+
+    if (this.resizeState && this.ghost) {
+      const { field } = this.resizeState;
+      const newWidth = this.ghost.width;
+      const newHeight = this.ghost.height;
+
+      if (newWidth !== field.width || newHeight !== field.height) {
+        if (!this.hasCollision(field.x, field.y, newWidth, newHeight, field.id)) {
+          this.fieldResized.emit({ fieldId: field.id, width: newWidth, height: newHeight });
+        }
+      }
+    }
+
+    this.resizeState = null;
+    this.ghost = null;
+    this.cdr.markForCheck();
+  }
+
+  private cleanupListeners(): void {
+    if (this.boundMouseMove) {
+      document.removeEventListener('mousemove', this.boundMouseMove);
+      this.boundMouseMove = null;
+    }
+    if (this.boundMouseUp) {
+      document.removeEventListener('mouseup', this.boundMouseUp);
+      this.boundMouseUp = null;
+    }
+  }
+
+  // ─── Delete ───────────────────────────────────────────────────
+
+  onDeleteClick(fieldId: string, event: MouseEvent): void {
+    event.stopPropagation();
+
+    if (this.deleteConfirmId === fieldId) {
+      this.fieldDeleted.emit(fieldId);
+      this.deleteConfirmId = null;
+      if (this.deleteConfirmTimeout) {
+        clearTimeout(this.deleteConfirmTimeout);
+        this.deleteConfirmTimeout = null;
+      }
+    } else {
+      this.deleteConfirmId = fieldId;
+      if (this.deleteConfirmTimeout) clearTimeout(this.deleteConfirmTimeout);
+      this.deleteConfirmTimeout = setTimeout(() => {
+        this.deleteConfirmId = null;
+        this.cdr.markForCheck();
+      }, 3000);
+    }
+  }
+
+  isDeleteConfirming(fieldId: string): boolean {
+    return this.deleteConfirmId === fieldId;
+  }
+
+  // ─── Value Changed ────────────────────────────────────────────
+
+  onValueChanged(field: Field): void {
+    this.fieldValueChanged.emit(field);
+  }
+
+  // ─── Property Creator ─────────────────────────────────────────
+
+  openPropertyCreator(): void {
+    const dialogRef = this.dialog.open(PropertyCreatorDialogComponent, {
+      width: '480px',
+      panelClass: 'ww-dialog',
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        const newProperty = new FieldProperty({
+          name: result.name,
+          type: result.type,
+        } as FieldProperty);
+
+        this.fieldPropertyFacade.addEntity(newProperty).subscribe(() => {
+          this.loadAllFieldProperties();
+        });
+      }
+    });
+  }
+
+  // ─── Private Helpers ──────────────────────────────────────────
 
   private loadAllFieldProperties(): void {
     this.fieldPropertyFacade.getEntities().subscribe((properties: FieldProperty[]) => {
@@ -90,216 +477,36 @@ export class FieldGridComponent {
 
   private getIconForType(type: FieldPropertyType): string {
     switch (type) {
-      case FieldPropertyType.Text:
-        return 'text_fields';
-      case FieldPropertyType.Date:
-        return 'calendar_today';
-      case FieldPropertyType.Boolean:
-        return 'check_box';
-      default:
-        return 'help_outline';
+      case FieldPropertyType.Text:    return 'notes';
+      case FieldPropertyType.Date:    return 'event';
+      case FieldPropertyType.Boolean: return 'toggle_on';
+      default:                        return 'help_outline';
     }
   }
 
-  onDragStart(option: FieldTypeOption, event: DragEvent): void {
-    console.log('Drag started:', option);
-
-    this.draggedOption = option;
-    this.draggedElement = event.target as HTMLElement;
-
-    // Add dragging class
-    this.draggedElement.classList.add('dragging');
-
-    if (event.dataTransfer) {
-      event.dataTransfer.effectAllowed = 'copy';
-      event.dataTransfer.setData('text/plain', option.propertyId);
-
-      // Create a custom drag image
-      const dragImage = this.createDragImage(option);
-      document.body.appendChild(dragImage);
-      event.dataTransfer.setDragImage(dragImage, 50, 25);
-
-      // Remove the drag image after a short delay
-      setTimeout(() => {
-        document.body.removeChild(dragImage);
-      }, 0);
-    }
-  }
-
-  onDragEnd(): void {
-    if (this.draggedElement) {
-      this.draggedElement.classList.remove('dragging');
-      this.draggedElement = null;
-    }
-    this.draggedOption = null;
-    this.draggedField = null;
-  }
-
-  onFieldDragStart(field: Field, event: DragEvent): void {
-    if (this.isLocked) return;
-
-    event.stopPropagation();
-
-    console.log('Field drag started:', field);
-
-    this.draggedField = field;
-    this.draggedElement = event.currentTarget as HTMLElement;
-
-    // Add dragging class
-    this.draggedElement.classList.add('dragging');
-
-    if (event.dataTransfer) {
-      event.dataTransfer.effectAllowed = 'move';
-      event.dataTransfer.setData('text/plain', field.id);
-
-      // Create a simple drag image for the field
-      const rect = this.draggedElement.getBoundingClientRect();
-      const canvas = document.createElement('canvas');
-      canvas.width = rect.width;
-      canvas.height = rect.height;
-      const ctx = canvas.getContext('2d');
-      if (ctx) {
-        ctx.fillStyle = 'rgba(33, 150, 243, 0.8)';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = 'white';
-        ctx.font = '14px sans-serif';
-        ctx.fillText('Moving field...', 10, 25);
-      }
-      event.dataTransfer.setDragImage(canvas, canvas.width / 2, canvas.height / 2);
+  private getDefaultWidth(type: FieldPropertyType): number {
+    switch (type) {
+      case FieldPropertyType.Boolean: return 2;
+      case FieldPropertyType.Date:    return 3;
+      case FieldPropertyType.Text:    return 4;
+      default:                        return 3;
     }
   }
 
   private createDragImage(option: FieldTypeOption): HTMLElement {
-    const dragImage = document.createElement('div');
-    dragImage.style.position = 'absolute';
-    dragImage.style.top = '-1000px';
-    dragImage.style.left = '-1000px';
-    dragImage.style.padding = '12px 16px';
-    dragImage.style.backgroundColor = '#2196f3';
-    dragImage.style.color = 'white';
-    dragImage.style.borderRadius = '8px';
-    dragImage.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.3)';
-    dragImage.style.display = 'flex';
-    dragImage.style.alignItems = 'center';
-    dragImage.style.gap = '8px';
-    dragImage.style.fontSize = '14px';
-    dragImage.style.fontWeight = '500';
-    dragImage.style.whiteSpace = 'nowrap';
-    dragImage.innerHTML = `
-      <span class="material-icons" style="font-size: 20px;">${this.getIconForType(option.type)}</span>
-      <span>${option.label}</span>
+    const el = document.createElement('div');
+    const style = getComputedStyle(document.documentElement);
+    const terracotta = style.getPropertyValue('--ww-terracotta').trim() || '#c45d3e';
+    el.style.cssText = `
+      position: absolute; top: -9999px; left: -9999px;
+      padding: 8px 16px; border-radius: 8px;
+      background: ${terracotta}; color: var(--ww-white, #fff);
+      font-family: var(--ww-font-display, 'Sora', sans-serif); font-size: 13px; font-weight: 500;
+      display: flex; align-items: center; gap: 8px;
+      box-shadow: var(--ww-shadow-md, 0 4px 12px rgba(0,0,0,0.2));
+      white-space: nowrap;
     `;
-    return dragImage;
-  }
-
-  onDragOver(event: DragEvent): void {
-    event.preventDefault();
-    event.stopPropagation();
-    if (event.dataTransfer) {
-      // Set drop effect based on what's being dragged
-      event.dataTransfer.dropEffect = this.draggedField ? 'move' : 'copy';
-    }
-  }
-
-  onDrop(event: DragEvent): void {
-    event.preventDefault();
-    event.stopPropagation();
-
-    console.log('Drop event fired', {
-      draggedField: this.draggedField,
-      draggedOption: this.draggedOption
-    });
-
-    const gridElement = event.currentTarget as HTMLElement;
-    const rect = gridElement.getBoundingClientRect();
-
-    // Account for padding
-    const paddingLeft = 16;
-    const paddingTop = 56;
-
-    // Calculate relative position within the grid (excluding padding)
-    const relativeX = event.clientX - rect.left - paddingLeft;
-    const relativeY = event.clientY - rect.top - paddingTop;
-
-    // Calculate available grid width (total width - both paddings)
-    const availableWidth = rect.width - (paddingLeft * 2);
-
-    // Calculate cell dimensions including gap
-    const columnWidth = (availableWidth + 16) / 12; // Add gap back to get cell + gap width
-    const rowHeight = 60 + 16; // row height + gap
-
-    // Calculate column and row (1-indexed for CSS grid)
-    const column = Math.floor(relativeX / columnWidth) + 1;
-    const row = Math.floor(relativeY / rowHeight) + 1;
-
-    console.log('Drop position:', {
-      clientX: event.clientX,
-      clientY: event.clientY,
-      relativeX,
-      relativeY,
-      column,
-      row,
-      columnWidth,
-      rowHeight,
-      availableWidth
-    });
-
-    // Check if we're dragging a new field type or an existing field
-    if (this.draggedOption) {
-      // Emit the field addition event
-      this.fieldAdded.emit({
-        propertyId: this.draggedOption.propertyId,
-        x: Math.max(1, Math.min(column, 11)), // Ensure within bounds (1-11, leaving room for width)
-        y: Math.max(1, row),
-        width: 2, // Default width
-        height: 1, // Default height
-      });
-      this.draggedOption = null;
-    } else if (this.draggedField) {
-      // Emit the field move event
-      const newX = Math.max(1, Math.min(column, 13 - this.draggedField.width));
-      const newY = Math.max(1, row);
-
-      // Only emit if position actually changed
-      if (newX !== this.draggedField.x || newY !== this.draggedField.y) {
-        console.log('Moving field:', {
-          fieldId: this.draggedField.id,
-          oldPosition: { x: this.draggedField.x, y: this.draggedField.y },
-          newPosition: { x: newX, y: newY }
-        });
-
-        this.fieldMoved.emit({
-          fieldId: this.draggedField.id,
-          x: newX,
-          y: newY
-        });
-      }
-      this.draggedField = null;
-    }
-  }
-
-  onValueChanged(event: { fieldId: string; valueId: string }): void {
-    this.fieldValueChanged.emit(event);
-  }
-
-  openPropertyCreator(): void {
-    const dialogRef = this.dialog.open(PropertyCreatorDialogComponent, {
-      width: '500px',
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        console.log('Creating new property:', result);
-        const newProperty = new FieldProperty({
-          name: result.name,
-          type: result.type,
-        } as FieldProperty);
-
-        this.fieldPropertyFacade.addEntity(newProperty).subscribe((createdProperty: FieldProperty) => {
-          console.log('Property created successfully:', createdProperty);
-          this.loadAllFieldProperties();
-        });
-      }
-    });
+    el.innerHTML = `<span class="material-icons" style="font-size:18px">${this.getIconForType(option.type)}</span><span>${option.label}</span>`;
+    return el;
   }
 }

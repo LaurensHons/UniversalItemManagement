@@ -1,12 +1,200 @@
-.row-active {
-  background-color: #f5f5f5;
-  border-radius: 4px;
-  border: 1px lightgray;
+// ─── Record List: Warm Workshop Aesthetic ────────────────────────────
+
+// ─── Shell Layout ────────────────────────────────────────────────
+.rl {
+  display: flex;
+  min-height: 100vh;
 }
 
-.sideBar {
+// ─── Sidebar ─────────────────────────────────────────────────────
+.rl__sidebar {
+  width: 260px;
+  flex-shrink: 0;
+  background: var(--ww-surface-sunken);
+  border-right: 1px solid var(--ww-border);
   display: flex;
   flex-direction: column;
+  overflow-y: auto;
+
+  &-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 14px 12px;
+    border-bottom: 1px solid var(--ww-border);
+  }
+
+  &-title {
+    font-family: var(--ww-font-display);
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--ww-ink-muted);
+  }
+
+  &-list {
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1;
+  }
+
+  &-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    padding: 32px 16px;
+    text-align: center;
+    color: var(--ww-ink-muted);
+
+    mat-icon {
+      font-size: 32px;
+      width: 32px;
+      height: 32px;
+      opacity: 0.35;
+    }
+
+    span {
+      font-size: 13px;
+    }
+  }
+}
+
+// ─── Sidebar Item ────────────────────────────────────────────────
+.rl__sidebar-item {
+  display: flex;
   align-items: center;
-  max-width: 20vh;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: var(--ww-radius-sm);
+  text-decoration: none;
+  color: inherit;
+  transition: all 150ms var(--ww-ease);
+  border: 1px solid transparent;
+  cursor: pointer;
+
+  &:hover {
+    background: var(--ww-surface-raised);
+    border-color: var(--ww-border);
+    box-shadow: var(--ww-shadow-sm);
+  }
+
+  &--active {
+    background: var(--ww-surface-raised);
+    border-color: var(--ww-terracotta) !important;
+    box-shadow: var(--ww-shadow-sm);
+
+    .rl__sidebar-item-icon {
+      background: var(--ww-terracotta);
+    }
+  }
+
+  &-icon {
+    width: 30px;
+    height: 30px;
+    border-radius: var(--ww-radius-sm);
+    background: var(--ww-ink-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: background 150ms var(--ww-ease);
+
+    mat-icon {
+      font-size: 16px;
+      width: 16px;
+      height: 16px;
+      color: var(--ww-white);
+    }
+  }
+
+  &-info {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  &-name {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--ww-ink);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &-meta {
+    font-size: 11px;
+    color: var(--ww-ink-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+// ─── Main Content ────────────────────────────────────────────────
+.rl__content {
+  flex: 1;
+  min-width: 0;
+  overflow-y: auto;
+}
+
+// ─── Buttons ─────────────────────────────────────────────────────
+.rl__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 12px;
+  border: 1px solid var(--ww-border);
+  border-radius: var(--ww-radius-sm);
+  background: var(--ww-surface-raised);
+  color: var(--ww-ink);
+  font-family: var(--ww-font-display);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 150ms var(--ww-ease);
+  white-space: nowrap;
+
+  mat-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+  }
+
+  &:hover {
+    background: var(--ww-surface-sunken);
+    border-color: var(--ww-border-strong);
+  }
+
+  &--small {
+    padding: 3px 8px;
+    font-size: 11px;
+
+    mat-icon {
+      font-size: 14px;
+      width: 14px;
+      height: 14px;
+    }
+  }
+
+  &--terracotta {
+    background: var(--ww-terracotta);
+    color: var(--ww-white);
+    border-color: var(--ww-terracotta);
+
+    &:hover {
+      background: var(--ww-terracotta-dark);
+      border-color: var(--ww-terracotta-dark);
+    }
+  }
+}
+
+// ─── Host ────────────────────────────────────────────────────────
+:host {
+  display: block;
 }

@@ -42,10 +42,11 @@ testem.log
 .DS_Store
 Thumbs.db
 
-UniversalItemManagement.Server/bin/*
-UniversalItemManagement.Server/obj/*
-UniversalItemManagement.EF/bin/*
-UniversalItemManagement.EF/obj/
-UniversalItemManagement.IntegrationTests/bin/
-UniversalItemManagement.IntegrationTests/obj/
+# .NET build output
+**/bin/
+**/obj/
+
+# Playwright
+universalitemmanagement.client/playwright-report/
+universalitemmanagement.client/test-results/
 

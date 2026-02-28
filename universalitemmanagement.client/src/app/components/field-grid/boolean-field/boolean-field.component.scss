@@ -1,5 +1,115 @@
-.boolean-field-container {
+// ─── Boolean Field: Warm Workshop Aesthetic ──────────────────────────
+
+.sf {
+  width: 100%;
+}
+
+.sf__label {
   display: flex;
   align-items: center;
-  padding: 8px 0;
+  gap: 4px;
+  font-family: var(--ww-font-display);
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--ww-ink-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 6px;
+}
+
+.sf__label-icon {
+  font-size: 12px !important;
+  width: 12px !important;
+  height: 12px !important;
+  color: var(--ww-sage);
+}
+
+.sf__status {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+}
+
+.sf__status-icon {
+  font-size: 12px !important;
+  width: 12px !important;
+  height: 12px !important;
+
+  &--spin {
+    color: var(--ww-honey);
+    animation: spin 1s linear infinite;
+  }
+
+  &--saved {
+    color: var(--ww-sage);
+    animation: fadeInOut 2s ease forwards;
+  }
+
+  &--error {
+    color: var(--ww-rose);
+  }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes fadeInOut {
+  0%   { opacity: 0; transform: scale(0.5); }
+  20%  { opacity: 1; transform: scale(1); }
+  80%  { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+.sf__toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  font-family: var(--ww-font-body);
+  font-size: 13px;
+  color: var(--ww-ink);
+}
+
+.sf__toggle-track {
+  width: 32px;
+  height: 18px;
+  border-radius: 9px;
+  background: var(--ww-border-strong);
+  position: relative;
+  transition: background var(--ww-duration);
+}
+
+.sf__toggle--on .sf__toggle-track {
+  background: var(--ww-sage);
+}
+
+.sf__toggle-thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--ww-white);
+  box-shadow: var(--ww-shadow-sm);
+  transition: transform var(--ww-duration) var(--ww-ease);
+}
+
+.sf__toggle--on .sf__toggle-thumb {
+  transform: translateX(14px);
+}
+
+.sf__toggle-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ww-ink-light);
+}
+
+.sf--saving .sf__toggle {
+  opacity: 0.7;
+  pointer-events: none;
 }

@@ -72,17 +72,13 @@ export class RecordComponent {
       description: new FormControl(''),
     });
 
-    // Subscribe to record changes from state
     this.route.paramMap
       .pipe(
         map((p) => p.get('id')),
         filter((v) => !!v),
         switchMap((v) => this.recordService.entity$(v!)),
         tap((record) => {
-          // Update local record reference when state changes
           this.record = record;
-
-          // Only update form if values have changed to avoid overwriting user edits
           if (this.form.get('id')?.value !== record.id) {
             this.form.setValue({
               id: record.id,
@@ -97,19 +93,15 @@ export class RecordComponent {
   }
 
   loadFieldPropertiesForRecord(record: Record): Observable<FieldProperty[]> {
-    // Extract unique property IDs from the record's fields
-    const uniquePropertyIds = [...new Set(record.fields.map((field) => field.propertyId))];
+    const uniquePropertyIds = [...new Set(record.fields.map((field) => field.fieldPropertyId))];
 
-    // If no fields, return empty observable
     if (uniquePropertyIds.length === 0) {
       this.fieldPropertiesMap.clear();
       return of([]);
     }
 
-    // First, try to get properties from the state
     return this.fieldPropertyFacade.entities$().pipe(
       switchMap((propertiesInState) => {
-        // Check which properties are already in state
         const propertiesInStateMap = new Map<string, FieldProperty>(
           propertiesInState.map((p) => [p.id, p])
         );
@@ -118,7 +110,6 @@ export class RecordComponent {
           (id) => !propertiesInStateMap.has(id)
         );
 
-        // If all properties are in state, use them
         if (missingPropertyIds.length === 0) {
           const properties = uniquePropertyIds.map((id) => propertiesInStateMap.get(id)!);
           this.fieldPropertiesMap = new Map(
@@ -127,14 +118,12 @@ export class RecordComponent {
           return of(properties);
         }
 
-        // Otherwise, fetch missing properties from backend
         const propertyRequests = missingPropertyIds.map((propertyId) =>
           this.fieldPropertyFacade.getEntity(propertyId)
         );
 
         return forkJoin(propertyRequests).pipe(
           map((fetchedProperties) => {
-            // Combine properties from state and newly fetched
             const allProperties = [
               ...uniquePropertyIds
                 .filter((id) => propertiesInStateMap.has(id))
@@ -172,13 +161,14 @@ export class RecordComponent {
       y: event.y,
       width: event.width,
       height: event.height,
-      propertyId: event.propertyId,
+      fieldPropertyId: event.propertyId,
+      fieldPropertyName: '',
+      fieldPropertyType: '',
       recordId: this.record.id,
+      hasValue: false
     } as Field);
 
-
     this.fieldFacade.addEntity(newField).subscribe((createdField: Field) => {
-      console.log('Field created successfully:', createdField);
       this.addFieldToRecord(createdField);
     });
   }
@@ -189,18 +179,16 @@ export class RecordComponent {
     const field = this.record.fields.find(f => f.id === event.fieldId);
     if (!field) return;
 
-    console.log('Moving field:', { field, newPosition: event });
-
     const updatedField = new Field({
       ...field,
       x: event.x,
       y: event.y
     } as Field);
 
-    this.updateFieldAndRecord(updatedField, 'Field position updated');
+    this.updateFieldAndRecord(updatedField);
   }
 
-  onFieldValueChanged(event: { fieldId: string; valueId: string }): void {
+  onFieldResized(event: { fieldId: string; width: number; height: number }): void {
     if (!this.record) return;
 
     const field = this.record.fields.find(f => f.id === event.fieldId);
@@ -208,15 +196,28 @@ export class RecordComponent {
 
     const updatedField = new Field({
       ...field,
-      valueId: event.valueId
+      width: event.width,
+      height: event.height,
     } as Field);
 
-    this.updateFieldAndRecord(updatedField, 'Field valueId updated');
+    this.updateFieldAndRecord(updatedField);
   }
 
-  private updateFieldAndRecord(updatedField: Field, logMessage: string): void {
+  onFieldDeleted(fieldId: string): void {
+    if (!this.record) return;
+
+    this.fieldFacade.removeEntity(fieldId).subscribe(() => {
+      this.removeFieldFromRecord(fieldId);
+    });
+  }
+
+  onFieldValueChanged(updatedField: Field): void {
+    if (!this.record) return;
+    this.replaceFieldInRecord(updatedField);
+  }
+
+  private updateFieldAndRecord(updatedField: Field): void {
     this.fieldFacade.updateEntity(updatedField).subscribe((savedField: Field) => {
-      console.log(logMessage, savedField);
       this.replaceFieldInRecord(savedField);
     });
   }
@@ -240,6 +241,17 @@ export class RecordComponent {
       fields: this.record.fields.map(f =>
         f.id === updatedField.id ? updatedField : f
       )
+    });
+
+    this.recordService.updateEntity(updatedRecord).subscribe();
+  }
+
+  private removeFieldFromRecord(fieldId: string): void {
+    if (!this.record) return;
+
+    const updatedRecord = new Record({
+      ...this.record,
+      fields: this.record.fields.filter(f => f.id !== fieldId)
     });
 
     this.recordService.updateEntity(updatedRecord).subscribe();

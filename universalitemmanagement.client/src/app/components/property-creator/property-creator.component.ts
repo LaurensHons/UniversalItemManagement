@@ -11,8 +11,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
-import { MatCardModule } from '@angular/material/card';
-import { MatTableModule } from '@angular/material/table';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { FieldProperty, FieldPropertyType } from 'src/app/core/models/field-property.model';
 import { FieldPropertyFacade, FieldPropertyEntities } from 'src/app/core/domain/store/fields/field-property.state';
 import { Subject, takeUntil } from 'rxjs';
@@ -28,8 +27,7 @@ import { Subject, takeUntil } from 'rxjs';
     MatButtonModule,
     MatIconModule,
     MatSelectModule,
-    MatCardModule,
-    MatTableModule,
+    MatTooltipModule,
   ],
   templateUrl: './property-creator.component.html',
   styleUrls: ['./property-creator.component.scss'],

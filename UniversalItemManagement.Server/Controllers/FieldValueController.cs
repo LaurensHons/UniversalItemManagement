@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using UniversalItemManagement.EF.Domain.Infrastructure;
 using UniversalItemManagement.EF.Domain.Models.Entities;
 using UniversalItemManagement.EF.Domain.Models.Entities.Fields;
-using UniversalItemManagement.EF.Domain.Models.Entities.Fields.Values;
+using UniversalItemManagement.EF.Domain.Models.Entities.Fields;
 using UniversalItemManagement.EF.Domain.Services.Contracts;
 using UniversalItemManagement.Server.Services.Contracts;
 

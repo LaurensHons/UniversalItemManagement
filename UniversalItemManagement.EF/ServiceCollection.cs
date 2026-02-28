@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using UniversalItemManagement.EF.Domain.Infrastructure;
 using UniversalItemManagement.EF.Domain.Models.Entities;
 using UniversalItemManagement.EF.Domain.Models.Entities.Fields;
-using UniversalItemManagement.EF.Domain.Models.Entities.Fields.Values;
 using UniversalItemManagement.EF.Domain.Services.Contracts;
 using UniversalItemManagement.EF.Domain.Services.Repositories;
 
@@ -30,6 +29,7 @@ namespace UniversalItemManagement.EF
 
         public static IServiceCollection AddRepositories(this IServiceCollection services)
         {
+            // Entity repositories
             services.AddTransient<IEntityRepository<Record>, RecordRepository>();
             services.AddTransient<IEntityRepository<FieldProperty>, FieldPropertyRepository>();
             services.AddTransient<IEntityRepository<Field>, FieldRepository>();
