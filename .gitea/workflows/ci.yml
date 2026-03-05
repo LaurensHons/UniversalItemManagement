@@ -1,0 +1,49 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --no-restore
+
+      - name: Run integration tests
+        run: dotnet test UniversalItemManagement.IntegrationTests/UniversalItemManagement.IntegrationTests.csproj --no-build --verbosity normal
+
+  build-image:
+    needs: build-and-test
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Log in to Gitea Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ secrets.GITEA_URL }}
+          username: ${{ secrets.GITEA_USER }}
+          password: ${{ secrets.GITEA_TOKEN }}
+
+      - name: Build and push Docker image
+        run: |
+          IMAGE=${{ secrets.GITEA_URL }}/${{ github.repository }}
+          IMAGE=$(echo "$IMAGE" | tr '[:upper:]' '[:lower:]')
+          docker build -t $IMAGE:latest -t $IMAGE:${{ github.sha }} .
+          docker push $IMAGE:latest
+          docker push $IMAGE:${{ github.sha }}

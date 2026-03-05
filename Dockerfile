@@ -1,4 +1,12 @@
-# Build stage
+# Angular build stage
+FROM node:20-alpine AS client-build
+WORKDIR /client
+COPY universalitemmanagement.client/package*.json ./
+RUN npm ci
+COPY universalitemmanagement.client/ .
+RUN npm run build -- --configuration production
+
+# .NET build stage
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
@@ -22,10 +30,12 @@ RUN dotnet publish "UniversalItemManagement.Server.csproj" -c Release -o /app/pu
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
 WORKDIR /app
 EXPOSE 8080
-EXPOSE 8081
 
-# Copy published files
+# Copy published .NET files
 COPY --from=publish /app/publish .
+
+# Copy Angular build output into wwwroot
+COPY --from=client-build /client/dist/universalitemmanagement.client ./wwwroot
 
 # Set environment to Production
 ENV ASPNETCORE_ENVIRONMENT=Production
