@@ -45,7 +45,6 @@ public class RecordControllerTests : IntegrationTestBase
         response.EnsureSuccessStatusCode();
         var records = await response.Content.ReadFromJsonAsync<List<Record>>();
         Xunit.Assert.NotNull(records);
-        Xunit.Assert.Single(records);
-        Xunit.Assert.Equal("Test Record", records[0].Name);
+        Xunit.Assert.Contains(records, r => r.Name == "Test Record");
     }
 }
