@@ -32,6 +32,8 @@ namespace UniversalItemManagement.Server
             services.AddTransient<FieldMapper>();
             services.AddTransient<FieldPropertyMapper>();
             services.AddTransient<RecordMapper>();
+            services.AddTransient<ItemListMapper>();
+            services.AddTransient<ListItemMapper>();
 
             // Domain services
             services.AddScoped<FieldValueService>();
@@ -63,6 +65,20 @@ namespace UniversalItemManagement.Server
                     new EntityUpdatedService<FieldValue>(
                         provider,
                         HubEnum.FieldValue
+                    )
+                );
+            services.AddTransient<IEntityService<ItemList>, EntityUpdatedService<ItemList>>(
+                (provider) =>
+                    new EntityUpdatedService<ItemList>(
+                        provider,
+                        HubEnum.ItemList
+                    )
+                );
+            services.AddTransient<IEntityService<ListItem>, EntityUpdatedService<ListItem>>(
+                (provider) =>
+                    new EntityUpdatedService<ListItem>(
+                        provider,
+                        HubEnum.ListItem
                     )
                 );
 

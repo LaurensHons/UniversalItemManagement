@@ -132,6 +132,35 @@
       border-color: var(--ww-terracotta-dark);
     }
   }
+
+  &--delete {
+    background: var(--ww-surface-raised);
+    color: var(--ww-ink-muted);
+    border-color: var(--ww-border);
+
+    &:hover {
+      color: #c0392b;
+      border-color: #c0392b;
+    }
+  }
+
+  &--confirming {
+    background: #c0392b;
+    color: var(--ww-white);
+    border-color: #c0392b;
+    animation: rc-pulse 0.6s ease-in-out infinite alternate;
+
+    &:hover {
+      background: #a93226;
+      border-color: #a93226;
+      color: var(--ww-white);
+    }
+  }
+}
+
+@keyframes rc-pulse {
+  from { opacity: 1; }
+  to { opacity: 0.8; }
 }
 
 // ─── Host ────────────────────────────────────────────────────────

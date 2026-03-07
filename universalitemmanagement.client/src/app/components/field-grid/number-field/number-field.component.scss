@@ -1,0 +1,96 @@
+// ─── Number Field: Warm Workshop Aesthetic ────────────────────────────
+
+.sf {
+  width: 100%;
+}
+
+.sf__label {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-family: var(--ww-font-display);
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--ww-ink-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 4px;
+}
+
+.sf__label-icon {
+  font-size: 12px !important;
+  width: 12px !important;
+  height: 12px !important;
+  color: var(--ww-terracotta);
+}
+
+.sf__status {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+}
+
+.sf__status-icon {
+  font-size: 12px !important;
+  width: 12px !important;
+  height: 12px !important;
+
+  &--spin {
+    color: var(--ww-honey);
+    animation: spin 1s linear infinite;
+  }
+
+  &--saved {
+    color: var(--ww-sage);
+    animation: fadeInOut 2s ease forwards;
+  }
+
+  &--error {
+    color: var(--ww-rose);
+  }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes fadeInOut {
+  0%   { opacity: 0; transform: scale(0.5); }
+  20%  { opacity: 1; transform: scale(1); }
+  80%  { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+.sf__input {
+  width: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: var(--ww-font-mono);
+  font-size: 13px;
+  color: var(--ww-ink);
+  padding: 2px 0;
+  border-bottom: 1px solid transparent;
+  transition: border-color var(--ww-duration);
+  -moz-appearance: textfield;
+
+  &::-webkit-outer-spin-button,
+  &::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  &:focus {
+    border-bottom-color: var(--ww-terracotta);
+  }
+
+  &::placeholder {
+    color: var(--ww-ink-muted);
+    opacity: 0.5;
+    font-family: var(--ww-font-body);
+  }
+}
+
+.sf--saving .sf__input {
+  opacity: 0.7;
+}

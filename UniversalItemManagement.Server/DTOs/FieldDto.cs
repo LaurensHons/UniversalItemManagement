@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace UniversalItemManagement.Server.DTOs
 {
@@ -31,6 +32,8 @@ namespace UniversalItemManagement.Server.DTOs
         public string? TextValue { get; set; }
         public bool? BooleanValue { get; set; }
         public DateTime? DateValue { get; set; }
+        public decimal? NumberValue { get; set; }
+        public List<Guid>? SelectedItemIds { get; set; }
 
         // FieldValue FK
         public Guid? ValueId { get; set; }

@@ -12,6 +12,8 @@ export class Field extends Entity {
   textValue?: string | null;
   booleanValue?: boolean | null;
   dateValue?: Date | null;
+  numberValue?: number | null;
+  selectedItemIds?: string[];
   valueId?: string | null;
   hasValue!: boolean;
 

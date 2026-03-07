@@ -1,0 +1,230 @@
+// ─── Select Field: Warm Workshop Aesthetic ────────────────────────────
+
+.sf {
+  width: 100%;
+  position: relative;
+}
+
+.sf__label {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-family: var(--ww-font-display);
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--ww-ink-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 4px;
+}
+
+.sf__label-icon {
+  font-size: 12px !important;
+  width: 12px !important;
+  height: 12px !important;
+  color: var(--ww-honey);
+}
+
+.sf__status {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+}
+
+.sf__status-icon {
+  font-size: 12px !important;
+  width: 12px !important;
+  height: 12px !important;
+
+  &--spin {
+    color: var(--ww-honey);
+    animation: spin 1s linear infinite;
+  }
+
+  &--saved {
+    color: var(--ww-sage);
+    animation: fadeInOut 2s ease forwards;
+  }
+
+  &--error {
+    color: var(--ww-rose);
+  }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes fadeInOut {
+  0%   { opacity: 0; transform: scale(0.5); }
+  20%  { opacity: 1; transform: scale(1); }
+  80%  { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+// ─── Select Trigger ──────────────────────────────────────────────────
+
+.sf__select-wrap {
+  position: relative;
+}
+
+.sf__select-trigger {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  padding: 3px 4px 3px 0;
+  border: none;
+  border-bottom: 1px solid transparent;
+  background: transparent;
+  cursor: pointer;
+  font-family: var(--ww-font-body);
+  font-size: 13px;
+  color: var(--ww-ink);
+  text-align: left;
+  transition: border-color var(--ww-duration);
+
+  &:hover, &--open {
+    border-bottom-color: var(--ww-honey);
+  }
+
+  &--empty .sf__select-text {
+    color: var(--ww-ink-muted);
+    opacity: 0.5;
+  }
+}
+
+.sf__select-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.sf__select-text {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sf__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+  flex: 1;
+  overflow: hidden;
+}
+
+.sf__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 1px 6px;
+  border-radius: 10px;
+  background: var(--ww-surface-sunken);
+  font-size: 11px;
+  white-space: nowrap;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sf__select-chevron {
+  font-size: 16px !important;
+  width: 16px !important;
+  height: 16px !important;
+  color: var(--ww-ink-muted);
+  flex-shrink: 0;
+}
+
+// ─── Dropdown ────────────────────────────────────────────────────────
+
+.sf__dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  margin-top: 4px;
+  padding: 4px;
+  background: var(--ww-surface-raised);
+  border: 1px solid var(--ww-border);
+  border-radius: var(--ww-radius-sm);
+  box-shadow: var(--ww-shadow-md);
+  max-height: 180px;
+  overflow-y: auto;
+  animation: dropIn 150ms var(--ww-ease);
+}
+
+@keyframes dropIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.sf__dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  padding: 5px 8px;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  cursor: pointer;
+  font-family: var(--ww-font-body);
+  font-size: 12px;
+  color: var(--ww-ink);
+  text-align: left;
+  transition: background 100ms;
+
+  &:hover {
+    background: var(--ww-surface-sunken);
+  }
+
+  &--selected {
+    background: var(--ww-honey-light);
+    font-weight: 500;
+  }
+
+  &--clear {
+    color: var(--ww-ink-muted);
+    font-size: 11px;
+    border-bottom: 1px solid var(--ww-border);
+    border-radius: 4px 4px 0 0;
+    margin-bottom: 2px;
+    padding-bottom: 6px;
+  }
+}
+
+.sf__dropdown-icon {
+  font-size: 14px !important;
+  width: 14px !important;
+  height: 14px !important;
+}
+
+.sf__dropdown-check {
+  margin-left: auto;
+  font-size: 14px !important;
+  width: 14px !important;
+  height: 14px !important;
+  color: var(--ww-honey);
+}
+
+.sf__dropdown-empty {
+  padding: 12px 8px;
+  text-align: center;
+  font-size: 11px;
+  color: var(--ww-ink-muted);
+}
+
+.sf--saving .sf__select-trigger {
+  opacity: 0.7;
+  pointer-events: none;
+}

@@ -26,6 +26,13 @@
         <mat-icon>save</mat-icon>
         Save
       </button>
+      <button
+        class="rc__btn rc__btn--delete"
+        [class.rc__btn--confirming]="deleteConfirming"
+        (click)="deleteRecord()">
+        <mat-icon>{{ deleteConfirming ? 'warning' : 'delete' }}</mat-icon>
+        {{ deleteConfirming ? 'Confirm delete?' : 'Delete' }}
+      </button>
     </div>
   </div>
 

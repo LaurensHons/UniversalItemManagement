@@ -1,17 +1,19 @@
+using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using UniversalItemManagement.Server.DTOs;
+using UniversalItemManagement.EF.Domain.Infrastructure;
 using UniversalItemManagement.EF.Domain.Models.Entities.Fields;
-using UniversalItemManagement.EF.Domain.Services.Contracts;
 
 namespace UniversalItemManagement.Server.Services
 {
     public class FieldValueService
     {
-        private readonly IEntityRepository<FieldValue> _fieldValueRepository;
+        private readonly Context _context;
 
-        public FieldValueService(IEntityRepository<FieldValue> fieldValueRepository)
+        public FieldValueService(Context context)
         {
-            _fieldValueRepository = fieldValueRepository;
+            _context = context;
         }
 
         public async Task EnsureFieldValueAsync(FieldDto dto)
@@ -26,7 +28,9 @@ namespace UniversalItemManagement.Server.Services
 
             if (dto.ValueId.HasValue)
             {
-                fieldValue = await _fieldValueRepository.FindByIdAsync(dto.ValueId.Value)
+                fieldValue = await _context.FieldValues
+                    .Include(fv => fv.SelectedItems)
+                    .FirstOrDefaultAsync(fv => fv.Id == dto.ValueId.Value)
                     ?? new FieldValue();
             }
             else
@@ -37,20 +41,32 @@ namespace UniversalItemManagement.Server.Services
             fieldValue.TextValue = dto.TextValue;
             fieldValue.BooleanValue = dto.BooleanValue;
             fieldValue.DateValue = dto.DateValue;
+            fieldValue.NumberValue = dto.NumberValue;
+
+            // Sync many-to-many selected items
+            fieldValue.SelectedItems.Clear();
+            if (dto.SelectedItemIds?.Any() == true)
+            {
+                var items = await _context.Set<ListItem>()
+                    .Where(li => dto.SelectedItemIds.Contains(li.Id))
+                    .ToListAsync();
+                foreach (var item in items)
+                {
+                    fieldValue.SelectedItems.Add(item);
+                }
+            }
 
             if (fieldValue.Id == default)
             {
-                fieldValue = await _fieldValueRepository.AddAsync(fieldValue);
-            }
-            else
-            {
-                fieldValue = await _fieldValueRepository.UpdateAsync(fieldValue);
+                _context.FieldValues.Add(fieldValue);
             }
 
+            await _context.SaveChangesAsync();
             dto.ValueId = fieldValue.Id;
         }
 
         private static bool HasAnyValue(FieldDto dto) =>
-            !string.IsNullOrEmpty(dto.TextValue) || dto.BooleanValue.HasValue || dto.DateValue.HasValue;
+            !string.IsNullOrEmpty(dto.TextValue) || dto.BooleanValue.HasValue || dto.DateValue.HasValue
+            || dto.NumberValue.HasValue || (dto.SelectedItemIds?.Any() == true);
     }
 }

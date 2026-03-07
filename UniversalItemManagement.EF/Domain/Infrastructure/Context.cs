@@ -14,6 +14,7 @@ namespace UniversalItemManagement.EF.Domain.Infrastructure
         public DbSet<Record> Records { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<FieldValue> FieldValues { get; set; }
+        public DbSet<ItemList> ItemLists { get; set; }
 
         public Context() { }
         public Context(DbContextOptions<Context> options) : base(options) { }
@@ -117,8 +118,13 @@ namespace UniversalItemManagement.EF.Domain.Infrastructure
             modelBuilder.Entity<User>().HasData(UserSeed.Data);
             modelBuilder.Entity<Record>().HasData(RecordSeed.Data);
 
+            // Enum-to-string conversions
             modelBuilder.Entity<FieldProperty>()
                 .Property(fp => fp.Type)
+                .HasConversion(new EnumToStringConverter<FieldPropertyType>());
+
+            modelBuilder.Entity<ListColumn>()
+                .Property(lc => lc.Type)
                 .HasConversion(new EnumToStringConverter<FieldPropertyType>());
 
             // Configure Record -> Fields relationship
@@ -135,6 +141,57 @@ namespace UniversalItemManagement.EF.Domain.Infrastructure
                 .HasForeignKey(f => f.ValueId)
                 .OnDelete(DeleteBehavior.Cascade)
                 .IsRequired(false);
+
+            // Configure FieldValue -> ListItem many-to-many relationship
+            modelBuilder.Entity<FieldValue>()
+                .HasMany(fv => fv.SelectedItems)
+                .WithMany()
+                .UsingEntity(j => j.ToTable("FieldValueListItem"));
+
+            // Configure FieldProperty -> ItemList (many-to-one, nullable)
+            modelBuilder.Entity<FieldProperty>()
+                .HasOne(fp => fp.ItemList)
+                .WithMany()
+                .HasForeignKey(fp => fp.ItemListId)
+                .OnDelete(DeleteBehavior.SetNull)
+                .IsRequired(false);
+
+            // Configure ItemList -> Columns (one-to-many, cascade)
+            modelBuilder.Entity<ItemList>()
+                .HasMany(il => il.Columns)
+                .WithOne(lc => lc.ItemList)
+                .HasForeignKey(lc => lc.ItemListId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Configure ItemList -> Items (one-to-many, cascade)
+            modelBuilder.Entity<ItemList>()
+                .HasMany(il => il.Items)
+                .WithOne(li => li.ItemList)
+                .HasForeignKey(li => li.ItemListId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Configure ListItem -> Values (one-to-many, cascade)
+            modelBuilder.Entity<ListItem>()
+                .HasMany(li => li.Values)
+                .WithOne(liv => liv.ListItem)
+                .HasForeignKey(liv => liv.ListItemId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Configure ListItemValue -> ListColumn (many-to-one)
+            modelBuilder.Entity<ListItemValue>()
+                .HasOne(liv => liv.ListColumn)
+                .WithMany()
+                .HasForeignKey(liv => liv.ListColumnId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Configure NumberValue precision
+            modelBuilder.Entity<FieldValue>()
+                .Property(fv => fv.NumberValue)
+                .HasColumnType("numeric(18,6)");
+
+            modelBuilder.Entity<ListItemValue>()
+                .Property(liv => liv.NumberValue)
+                .HasColumnType("numeric(18,6)");
 
             base.OnModelCreating(modelBuilder);
         }

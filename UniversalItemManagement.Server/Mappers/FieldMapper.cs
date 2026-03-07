@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using UniversalItemManagement.Server.DTOs;
 using UniversalItemManagement.EF.Domain.Models.Entities.Fields;
 
@@ -38,6 +39,9 @@ namespace UniversalItemManagement.Server.Mappers
                 dto.TextValue = entity.FieldValue.TextValue;
                 dto.BooleanValue = entity.FieldValue.BooleanValue;
                 dto.DateValue = entity.FieldValue.DateValue;
+                dto.NumberValue = entity.FieldValue.NumberValue;
+                dto.SelectedItemIds = entity.FieldValue.SelectedItems?
+                    .Select(li => li.Id).ToList();
             }
 
             return dto;

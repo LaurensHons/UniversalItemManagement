@@ -44,11 +44,15 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy(name: "FrontEndUI", policy =>
     {
-        policy.WithOrigins(
-            "https://127.0.0.1:63820",
-            "https://localhost:63820",
-            "http://localhost:5232",
-            "http://localhost:4200")
+        policy.SetIsOriginAllowed(origin =>
+            {
+                var host = new Uri(origin).Host;
+                return host == "localhost"
+                    || host == "127.0.0.1"
+                    || host.StartsWith("192.168.")
+                    || host.StartsWith("10.")
+                    || host.StartsWith("172.");
+            })
         .AllowAnyMethod()
         .AllowAnyHeader()
         .AllowCredentials();

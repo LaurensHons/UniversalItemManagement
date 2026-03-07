@@ -15,7 +15,8 @@ namespace UniversalItemManagement.EF.Domain.Services.Repositories
                 .Include(r => r.Fields)
                     .ThenInclude(f => f.Property)
                 .Include(r => r.Fields)
-                    .ThenInclude(f => f.FieldValue);
+                    .ThenInclude(f => f.FieldValue)
+                        .ThenInclude(fv => fv!.SelectedItems);
         }
     }
 }

@@ -1,0 +1,28 @@
+<div class="ped">
+  <div class="ped__header">
+    <div class="ped__header-icon">
+      <mat-icon>edit</mat-icon>
+    </div>
+    <div>
+      <h2 class="ped__title">Edit Field Property</h2>
+      <p class="ped__subtitle">Update this property's configuration</p>
+    </div>
+  </div>
+
+  <mat-dialog-content>
+    <app-property-form
+      [initialData]="initialData"
+      [lockType]="true"
+      (formValueChange)="onFormChange($event)"
+      (validChange)="onValidChange($event)"
+    ></app-property-form>
+  </mat-dialog-content>
+
+  <div class="ped__actions">
+    <button class="ped__btn" (click)="onCancel()">Cancel</button>
+    <button class="ped__btn ped__btn--primary" (click)="onSubmit()" [disabled]="!isFormValid">
+      <mat-icon>check</mat-icon>
+      Save
+    </button>
+  </div>
+</div>

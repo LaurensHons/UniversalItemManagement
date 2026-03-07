@@ -1,7 +1,7 @@
 // ─── Property Creator Dialog: Warm Workshop Aesthetic ────────────────
 
 .pcd {
-  min-width: 400px;
+  min-width: 460px;
 }
 
 // ─── Header ──────────────────────────────────────────────────────
@@ -39,33 +39,10 @@
   letter-spacing: -0.01em;
 }
 
-// ─── Form ────────────────────────────────────────────────────────
-.pcd__form {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  padding: 8px 0;
-}
-
-.pcd__field {
-  width: 100%;
-}
-
-.pcd__type-option {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-
-  mat-icon {
-    font-size: 18px;
-    width: 18px;
-    height: 18px;
-    color: var(--ww-ink-muted);
-  }
-
-  span {
-    font-size: 14px;
-  }
+.pcd__subtitle {
+  margin: 2px 0 0;
+  font-size: 12px;
+  color: var(--ww-ink-muted);
 }
 
 // ─── Actions ─────────────────────────────────────────────────────

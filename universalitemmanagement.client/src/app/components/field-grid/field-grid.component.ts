@@ -16,12 +16,20 @@ import { FieldProperty, FieldPropertyType } from 'src/app/core/models/field-prop
 import { TextFieldComponent } from './text-field/text-field.component';
 import { DateFieldComponent } from './date-field/date-field.component';
 import { BooleanFieldComponent } from './boolean-field/boolean-field.component';
+import { NumberFieldComponent } from './number-field/number-field.component';
+import { SelectFieldComponent } from './select-field/select-field.component';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { FieldPropertyFacade } from 'src/app/core/domain/store/fields/field-property.state';
+import { ItemListFacade } from 'src/app/core/domain/store/item-list/item-list.state';
+import { ListItemService } from 'src/app/core/services/list-item.service';
+import { ItemList, ListItem, ListItemValue, ListColumn } from 'src/app/core/models/item-list.model';
 import { PropertyCreatorDialogComponent } from './property-creator-dialog/property-creator-dialog.component';
+import { PropertyEditorDialogComponent } from './property-editor-dialog/property-editor-dialog.component';
+import { PropertyFormValue, SelectOptionDraft } from './property-form/property-form.component';
+import { forkJoin, switchMap } from 'rxjs';
 
 export interface FieldTypeOption {
   propertyId: string;
@@ -57,6 +65,8 @@ const GRID_GAP = 12;
     TextFieldComponent,
     DateFieldComponent,
     BooleanFieldComponent,
+    NumberFieldComponent,
+    SelectFieldComponent,
     MatButtonModule,
     MatIconModule,
     MatTooltipModule,
@@ -111,6 +121,8 @@ export class FieldGridComponent implements OnDestroy {
 
   constructor(
     private fieldPropertyFacade: FieldPropertyFacade,
+    private itemListFacade: ItemListFacade,
+    private listItemService: ListItemService,
     private dialog: MatDialog,
     private cdr: ChangeDetectorRef,
     private zone: NgZone
@@ -444,15 +456,55 @@ export class FieldGridComponent implements OnDestroy {
 
   openPropertyCreator(): void {
     const dialogRef = this.dialog.open(PropertyCreatorDialogComponent, {
-      width: '480px',
+      width: '520px',
       panelClass: 'ww-dialog',
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      if (result) {
+      if (!result) return;
+
+      if (result.type === 'Select' && result.selectOptions?.length) {
+        // Create ItemList with a display column, then ListItems with name values
+        const newList = new ItemList({
+          name: result.name + ' List',
+          columns: [
+            { name: 'Name', type: 'Text', order: 0, isDisplayColumn: true } as ListColumn,
+          ],
+        } as ItemList);
+
+        this.itemListFacade.addEntity(newList).pipe(
+          switchMap((savedList: ItemList) => {
+            const displayCol = savedList.columns?.find(c => c.isDisplayColumn);
+            const itemRequests = result.selectOptions.map((opt: SelectOptionDraft, i: number) =>
+              this.listItemService.AddEntity(new ListItem({
+                order: i,
+                color: opt.color,
+                itemListId: savedList.id,
+                values: displayCol
+                  ? [{ listColumnId: displayCol.id, textValue: opt.name } as ListItemValue]
+                  : [],
+              } as ListItem))
+            );
+            return forkJoin(itemRequests).pipe(
+              switchMap(() => {
+                const newProperty = new FieldProperty({
+                  name: result.name,
+                  type: result.type,
+                  isMultiSelect: result.isMultiSelect ?? false,
+                  itemListId: savedList.id,
+                } as FieldProperty);
+                return this.fieldPropertyFacade.addEntity(newProperty);
+              })
+            );
+          })
+        ).subscribe(() => {
+          this.loadAllFieldProperties();
+        });
+      } else {
         const newProperty = new FieldProperty({
           name: result.name,
           type: result.type,
+          isMultiSelect: result.isMultiSelect ?? false,
         } as FieldProperty);
 
         this.fieldPropertyFacade.addEntity(newProperty).subscribe(() => {
@@ -460,6 +512,73 @@ export class FieldGridComponent implements OnDestroy {
         });
       }
     });
+  }
+
+  // ─── Property Editor ─────────────────────────────────────────
+
+  openPropertyEditor(option: FieldTypeOption): void {
+    // Find the full FieldProperty from the fieldProperties map
+    const property = this.fieldProperties.get(option.propertyId);
+    if (!property) return;
+
+    const dialogRef = this.dialog.open(PropertyEditorDialogComponent, {
+      width: '520px',
+      panelClass: 'ww-dialog',
+      data: { property },
+    });
+
+    dialogRef.afterClosed().subscribe((result: PropertyFormValue | undefined) => {
+      if (!result) return;
+
+      // Update the property name and isMultiSelect
+      const updatedProperty = new FieldProperty({
+        ...property,
+        name: result.name,
+        isMultiSelect: result.isMultiSelect,
+      } as FieldProperty);
+
+      this.fieldPropertyFacade.updateEntity(updatedProperty).subscribe(() => {
+        // Diff select options: add new, delete removed
+        if (property.type === FieldPropertyType.Select) {
+          this.syncListItems(property, result.selectOptions);
+        } else {
+          this.loadAllFieldProperties();
+        }
+      });
+    });
+  }
+
+  private syncListItems(property: FieldProperty, newOptions: SelectOptionDraft[]): void {
+    const existingItems = property.itemList?.items ?? [];
+    const displayCol = property.itemList?.columns?.find(c => c.isDisplayColumn);
+    const newIds = new Set(newOptions.filter(o => o.id).map(o => o.id!));
+
+    // Items to delete (exist in current but not in new)
+    const toDelete = existingItems.filter(i => !newIds.has(i.id));
+    // Items to create (no id = new)
+    const toCreate = newOptions.filter(o => !o.id);
+
+    const operations = [
+      ...toDelete.map(i => this.listItemService.DeleteEntityById(i.id)),
+      ...toCreate.map((opt, i) =>
+        this.listItemService.AddEntity(new ListItem({
+          order: existingItems.length + i,
+          color: opt.color,
+          itemListId: property.itemListId!,
+          values: displayCol
+            ? [{ listColumnId: displayCol.id, textValue: opt.name } as ListItemValue]
+            : [],
+        } as ListItem))
+      ),
+    ];
+
+    if (operations.length) {
+      forkJoin(operations).subscribe(() => {
+        this.loadAllFieldProperties();
+      });
+    } else {
+      this.loadAllFieldProperties();
+    }
   }
 
   // ─── Private Helpers ──────────────────────────────────────────
@@ -480,6 +599,8 @@ export class FieldGridComponent implements OnDestroy {
       case FieldPropertyType.Text:    return 'notes';
       case FieldPropertyType.Date:    return 'event';
       case FieldPropertyType.Boolean: return 'toggle_on';
+      case FieldPropertyType.Number:  return 'tag';
+      case FieldPropertyType.Select:  return 'list';
       default:                        return 'help_outline';
     }
   }
@@ -489,6 +610,8 @@ export class FieldGridComponent implements OnDestroy {
       case FieldPropertyType.Boolean: return 2;
       case FieldPropertyType.Date:    return 3;
       case FieldPropertyType.Text:    return 4;
+      case FieldPropertyType.Number:  return 3;
+      case FieldPropertyType.Select:  return 3;
       default:                        return 3;
     }
   }

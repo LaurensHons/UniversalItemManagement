@@ -38,7 +38,8 @@ namespace UniversalItemManagement.Server.Controllers
             await _fieldValueService.EnsureFieldValueAsync(dto);
             var entity = _mapper.MapToEntity(dto);
             var savedEntity = await _entityService.Add(entity);
-            return _mapper.Map(savedEntity);
+            var fetched = await _entityService.FindByIdAsync(savedEntity.Id);
+            return _mapper.Map(fetched!);
         }
 
         /// <summary>
@@ -51,7 +52,8 @@ namespace UniversalItemManagement.Server.Controllers
             await _fieldValueService.EnsureFieldValueAsync(dto);
             var entity = _mapper.MapToEntity(dto);
             var savedEntity = await _entityService.Update(entity);
-            return _mapper.Map(savedEntity);
+            var fetched = await _entityService.FindByIdAsync(savedEntity.Id);
+            return _mapper.Map(fetched!);
         }
     }
 }

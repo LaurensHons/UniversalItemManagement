@@ -60,6 +60,13 @@
             <span class="fg__sidebar-item-name">{{ option.label }}</span>
             <span class="fg__sidebar-item-type">{{ option.type }}</span>
           </div>
+          <button
+            class="fg__sidebar-item-edit"
+            (click)="openPropertyEditor(option); $event.stopPropagation()"
+            matTooltip="Edit property"
+          >
+            <mat-icon>edit</mat-icon>
+          </button>
           <mat-icon class="fg__sidebar-item-drag">drag_indicator</mat-icon>
         </div>
 
@@ -142,6 +149,20 @@
               [property]="getFieldProperty(field)!"
               (valueChanged)="onValueChanged($event)">
             </app-boolean-field>
+
+            <app-number-field
+              *ngSwitchCase="FieldPropertyType.Number"
+              [field]="field"
+              [property]="getFieldProperty(field)!"
+              (valueChanged)="onValueChanged($event)">
+            </app-number-field>
+
+            <app-select-field
+              *ngSwitchCase="FieldPropertyType.Select"
+              [field]="field"
+              [property]="getFieldProperty(field)!"
+              (valueChanged)="onValueChanged($event)">
+            </app-select-field>
 
             <div *ngSwitchDefault class="fg__unknown">
               <mat-icon>help_outline</mat-icon>

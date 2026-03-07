@@ -11,6 +11,8 @@ namespace UniversalItemManagement.Server.Hubs
         Field,
         FieldProperty,
         FieldValue,
+        ItemList,
+        ListItem,
     }
     public interface IClient
     {

@@ -23,7 +23,7 @@ import {
   switchMap,
   tap,
 } from 'rxjs';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { FieldGridComponent } from '../field-grid/field-grid.component';
 import { FieldPropertyFacade } from 'src/app/core/domain/store/fields/field-property.state';
 import { FieldProperty } from 'src/app/core/models/field-property.model';
@@ -52,6 +52,8 @@ export class RecordComponent {
 
   record?: Record;
   fieldPropertiesMap = new Map<string, FieldProperty>();
+  deleteConfirming = false;
+  private deleteTimeout: any;
 
   @Input()
   set id(id: string) {
@@ -61,6 +63,7 @@ export class RecordComponent {
   constructor(
     private recordService: RecordFacade,
     private route: ActivatedRoute,
+    private router: Router,
     private fieldPropertyFacade: FieldPropertyFacade,
     private fieldFacade: FieldFacade
   ) {}
@@ -169,7 +172,7 @@ export class RecordComponent {
     } as Field);
 
     this.fieldFacade.addEntity(newField).subscribe((createdField: Field) => {
-      this.addFieldToRecord(createdField);
+      this.addFieldToLocal(createdField);
     });
   }
 
@@ -207,53 +210,65 @@ export class RecordComponent {
     if (!this.record) return;
 
     this.fieldFacade.removeEntity(fieldId).subscribe(() => {
-      this.removeFieldFromRecord(fieldId);
+      // this.removeFieldFromRecord(fieldId);
     });
   }
 
-  onFieldValueChanged(updatedField: Field): void {
-    if (!this.record) return;
-    this.replaceFieldInRecord(updatedField);
-  }
+  onFieldValueChanged(_updatedField: Field): void {}
 
   private updateFieldAndRecord(updatedField: Field): void {
     this.fieldFacade.updateEntity(updatedField).subscribe((savedField: Field) => {
-      this.replaceFieldInRecord(savedField);
+      this.replaceFieldInLocal(savedField);
     });
   }
 
-  private addFieldToRecord(field: Field): void {
+  private addFieldToLocal(field: Field): void {
     if (!this.record) return;
-
-    const updatedRecord = new Record({
+    this.record = new Record({
       ...this.record,
-      fields: [...this.record.fields, field]
+      fields: [...this.record.fields, field],
     });
-
-    this.recordService.updateEntity(updatedRecord).subscribe();
   }
 
-  private replaceFieldInRecord(updatedField: Field): void {
+  private replaceFieldInLocal(updatedField: Field): void {
     if (!this.record) return;
-
-    const updatedRecord = new Record({
+    this.record = new Record({
       ...this.record,
       fields: this.record.fields.map(f =>
         f.id === updatedField.id ? updatedField : f
-      )
+      ),
     });
-
-    this.recordService.updateEntity(updatedRecord).subscribe();
   }
 
-  private removeFieldFromRecord(fieldId: string): void {
+  private removeFieldFromLocal(fieldId: string): void {
+    if (!this.record) return;
+    this.record = new Record({
+      ...this.record,
+      fields: this.record.fields.filter(f => f.id !== fieldId),
+    });
+  }
+
+  deleteRecord(): void {
     if (!this.record) return;
 
-    const updatedRecord = new Record({
-      ...this.record,
-      fields: this.record.fields.filter(f => f.id !== fieldId)
-    });
+    if (!this.deleteConfirming) {
+      this.deleteConfirming = true;
+      this.deleteTimeout = setTimeout(() => {
+        this.deleteConfirming = false;
+      }, 3000);
+      return;
+    }
 
-    this.recordService.updateEntity(updatedRecord).subscribe();
+    clearTimeout(this.deleteTimeout);
+    this.deleteConfirming = false;
+
+    this.recordService.removeEntity(this.record.id).subscribe(() => {
+      this.router.navigate(['/']);
+    });
+  }
+
+  cancelDelete(): void {
+    clearTimeout(this.deleteTimeout);
+    this.deleteConfirming = false;
   }
 }

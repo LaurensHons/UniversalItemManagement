@@ -1,0 +1,66 @@
+<div class="sf sf--select" [class.sf--saving]="status === 'saving'">
+  <label class="sf__label">
+    <mat-icon class="sf__label-icon">{{ isMultiSelect ? 'checklist' : 'list' }}</mat-icon>
+    {{ property?.name }}
+    <span class="sf__status" *ngIf="status !== 'idle'">
+      <mat-icon *ngIf="status === 'saving'" class="sf__status-icon sf__status-icon--spin">sync</mat-icon>
+      <mat-icon *ngIf="status === 'saved'" class="sf__status-icon sf__status-icon--saved">check_circle</mat-icon>
+      <mat-icon *ngIf="status === 'error'" class="sf__status-icon sf__status-icon--error">error</mat-icon>
+    </span>
+  </label>
+
+  <div class="sf__select-wrap">
+    <button
+      class="sf__select-trigger"
+      [class.sf__select-trigger--open]="isOpen"
+      [class.sf__select-trigger--empty]="!selectedItems.length"
+      (click)="toggleDropdown()"
+      type="button"
+    >
+      <!-- Multi-select: show chips -->
+      <span class="sf__chips" *ngIf="isMultiSelect && selectedItems.length">
+        <span class="sf__chip" *ngFor="let item of selectedItems">
+          <span class="sf__select-dot" [style.background]="getItemColor(item)"></span>
+          {{ getItemName(item) }}
+        </span>
+      </span>
+      <!-- Single select: show single value -->
+      <ng-container *ngIf="!isMultiSelect && selectedItems.length">
+        <span class="sf__select-dot" [style.background]="getItemColor(selectedItems[0])"></span>
+        <span class="sf__select-text">{{ getItemName(selectedItems[0]) }}</span>
+      </ng-container>
+      <!-- Empty placeholder -->
+      <span class="sf__select-text" *ngIf="!selectedItems.length">Select...</span>
+      <mat-icon class="sf__select-chevron">{{ isOpen ? 'expand_less' : 'expand_more' }}</mat-icon>
+    </button>
+
+    <div class="sf__dropdown" *ngIf="isOpen">
+      <button
+        class="sf__dropdown-item sf__dropdown-item--clear"
+        (click)="clearAll()"
+        type="button"
+      >
+        <mat-icon class="sf__dropdown-icon">close</mat-icon>
+        <span>{{ isMultiSelect ? 'Clear all' : 'Clear selection' }}</span>
+      </button>
+      <button
+        *ngFor="let item of items"
+        class="sf__dropdown-item"
+        [class.sf__dropdown-item--selected]="isSelected(item)"
+        (click)="isMultiSelect ? toggleItem(item) : selectItem(item)"
+        type="button"
+      >
+        <span
+          class="sf__select-dot"
+          [style.background]="getItemColor(item)"
+        ></span>
+        <span>{{ getItemName(item) }}</span>
+        <mat-icon *ngIf="isSelected(item)" class="sf__dropdown-check">check</mat-icon>
+      </button>
+
+      <div class="sf__dropdown-empty" *ngIf="!items.length">
+        <span>No options defined</span>
+      </div>
+    </div>
+  </div>
+</div>

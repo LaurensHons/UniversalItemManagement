@@ -191,6 +191,16 @@
     background: var(--ww-sage-pale);
     color: var(--ww-sage);
   }
+
+  &[data-type="number"] {
+    background: rgba(var(--ww-terracotta-rgb), 0.1);
+    color: var(--ww-terracotta);
+  }
+
+  &[data-type="select"] {
+    background: var(--ww-honey-light);
+    color: var(--ww-honey);
+  }
 }
 
 // ─── Icon Button ─────────────────────────────────────────────────

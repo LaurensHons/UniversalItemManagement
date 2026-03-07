@@ -1,0 +1,82 @@
+<form [formGroup]="propertyForm" class="pf__form">
+  <!-- Property Name -->
+  <mat-form-field appearance="outline" class="no-subscript-wrapper pf__field">
+    <mat-label>Property Name</mat-label>
+    <input matInput formControlName="name" placeholder="e.g., Email, Age, Status" />
+  </mat-form-field>
+
+  <!-- Type Selector -->
+  <div class="pf__type-grid" [class.pf__type-grid--locked]="lockType">
+    <button
+      *ngFor="let type of propertyTypes"
+      class="pf__type-card"
+      [class.pf__type-card--selected]="selectedType === type.value"
+      [class.pf__type-card--disabled]="lockType && selectedType !== type.value"
+      (click)="selectType(type.value)"
+      type="button"
+    >
+      <mat-icon class="pf__type-card-icon">{{ type.icon }}</mat-icon>
+      <span class="pf__type-card-label">{{ type.label }}</span>
+      <span class="pf__type-card-desc">{{ type.desc }}</span>
+    </button>
+  </div>
+
+  <!-- Multi-select toggle (only when Select type is chosen) -->
+  <button
+    *ngIf="isSelectType"
+    class="pf__multi-toggle"
+    [class.pf__multi-toggle--active]="isMultiSelect"
+    (click)="toggleMultiSelect()"
+    type="button"
+  >
+    <mat-icon class="pf__multi-toggle-icon">{{ isMultiSelect ? 'checklist' : 'radio_button_checked' }}</mat-icon>
+    <span class="pf__multi-toggle-label">{{ isMultiSelect ? 'Multi-select' : 'Single select' }}</span>
+    <span class="pf__multi-toggle-hint">{{ isMultiSelect ? 'Users can pick multiple options' : 'Users can pick one option' }}</span>
+  </button>
+
+  <!-- Select Options Builder (only when Select type is chosen) -->
+  <div class="pf__options" *ngIf="isSelectType">
+    <div class="pf__options-header">
+      <span class="pf__options-title">Options</span>
+      <span class="pf__options-count" *ngIf="selectOptions.length">{{ selectOptions.length }}</span>
+      <span class="pf__options-hint" *ngIf="selectOptions.length < 2">
+        Need at least 2
+      </span>
+    </div>
+
+    <!-- Option List -->
+    <div class="pf__options-list" *ngIf="selectOptions.length">
+      <div class="pf__option" *ngFor="let option of selectOptions; let i = index">
+        <span class="pf__option-dot" [style.background]="option.color"></span>
+        <span class="pf__option-name">{{ option.name }}</span>
+        <button
+          class="pf__option-remove"
+          (click)="removeOption(i)"
+          type="button"
+          matTooltip="Remove option"
+        >
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+    </div>
+
+    <!-- Add Option Input -->
+    <div class="pf__options-add">
+      <input
+        class="pf__options-input"
+        [(ngModel)]="newOptionName"
+        [ngModelOptions]="{ standalone: true }"
+        placeholder="Type option name and press Enter"
+        (keydown)="onOptionKeydown($event)"
+      />
+      <button
+        class="pf__options-add-btn"
+        (click)="addOption()"
+        [disabled]="!newOptionName.trim()"
+        type="button"
+      >
+        <mat-icon>add</mat-icon>
+      </button>
+    </div>
+  </div>
+</form>

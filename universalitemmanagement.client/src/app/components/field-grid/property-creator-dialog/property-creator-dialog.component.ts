@@ -1,53 +1,54 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
-import { MatButtonModule } from '@angular/material/button';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
-import { FieldPropertyType } from 'src/app/core/models/field-property.model';
 import { MatIconModule } from '@angular/material/icon';
+import { PropertyFormComponent, PropertyFormValue } from '../property-form/property-form.component';
 
 @Component({
   selector: 'app-property-creator-dialog',
   standalone: true,
   imports: [
     CommonModule,
-    ReactiveFormsModule,
     MatDialogModule,
-    MatButtonModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatSelectModule,
-    MatIconModule
+    MatIconModule,
+    PropertyFormComponent,
   ],
   templateUrl: './property-creator-dialog.component.html',
   styleUrls: ['./property-creator-dialog.component.scss'],
 })
 export class PropertyCreatorDialogComponent {
-  FieldPropertyType = FieldPropertyType;
-
-  propertyForm = new FormGroup({
-    name: new FormControl('', [Validators.required]),
-    type: new FormControl<FieldPropertyType>(FieldPropertyType.Text, [Validators.required]),
-  });
-
-  propertyTypes = [
-    { value: FieldPropertyType.Text, label: 'Text', icon: 'text_fields' },
-    { value: FieldPropertyType.Boolean, label: 'Boolean', icon: 'check_box' },
-    { value: FieldPropertyType.Date, label: 'Date', icon: 'calendar_today' },
-  ];
+  formValue: PropertyFormValue | null = null;
+  isFormValid = false;
 
   constructor(private dialogRef: MatDialogRef<PropertyCreatorDialogComponent>) {}
+
+  onFormChange(value: PropertyFormValue): void {
+    this.formValue = value;
+  }
+
+  onValidChange(valid: boolean): void {
+    this.isFormValid = valid;
+  }
 
   onCancel(): void {
     this.dialogRef.close();
   }
 
   onSubmit(): void {
-    if (this.propertyForm.valid) {
-      this.dialogRef.close(this.propertyForm.value);
+    if (!this.isFormValid || !this.formValue) return;
+
+    const result: any = {
+      name: this.formValue.name,
+      type: this.formValue.type,
+    };
+    if (this.formValue.type === 'Select') {
+      result.isMultiSelect = this.formValue.isMultiSelect;
+      result.selectOptions = this.formValue.selectOptions.map((opt, i) => ({
+        name: opt.name,
+        color: opt.color,
+        order: i,
+      }));
     }
+    this.dialogRef.close(result);
   }
 }

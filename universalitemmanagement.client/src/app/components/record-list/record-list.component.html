@@ -1,45 +1,150 @@
 <div class="rl">
-  <!-- ─── Sidebar ─────────────────────────────────────────────── -->
-  <aside class="rl__sidebar">
-    <div class="rl__sidebar-header">
-      <span class="rl__sidebar-title">Records</span>
+
+  <!-- ─── Header ──────────────────────────────────────────────── -->
+  <div class="rl__header">
+    <div class="rl__header-left">
+      <span class="rl__title">Records</span>
+      <span class="rl__count" *ngIf="records.length">{{ records.length }}</span>
+    </div>
+    <div class="rl__header-actions">
       <button
-        class="rl__btn rl__btn--terracotta rl__btn--small"
+        class="rl__btn"
+        (click)="openItemListBrowser()"
+        matTooltip="Browse item lists"
+      >
+        <mat-icon>view_list</mat-icon>
+        <span class="rl__btn-label">Lists</span>
+      </button>
+      <button
+        class="rl__btn"
+        [class.rl__btn--active]="columnPickerOpen"
+        (click)="columnPickerOpen = !columnPickerOpen"
+        matTooltip="Toggle visible columns"
+        *ngIf="columns.length"
+      >
+        <mat-icon>view_column</mat-icon>
+        <span class="rl__btn-label">Columns</span>
+      </button>
+      <button
+        class="rl__btn rl__btn--terracotta"
         [routerLink]="'new'"
         matTooltip="Create new record"
       >
         <mat-icon>add</mat-icon>
       </button>
     </div>
+  </div>
 
-    <div class="rl__sidebar-list">
-      <a
-        *ngFor="let record of records"
-        class="rl__sidebar-item"
-        [routerLink]="['record', record.id]"
-        routerLinkActive="rl__sidebar-item--active"
-      >
-        <div class="rl__sidebar-item-icon">
-          <mat-icon>description</mat-icon>
-        </div>
-        <div class="rl__sidebar-item-info">
-          <span class="rl__sidebar-item-name">{{ record.name }}</span>
-          <span class="rl__sidebar-item-meta" *ngIf="record.description">{{ record.description }}</span>
-        </div>
-      </a>
+  <!-- ─── Column Picker ──────────────────────────────────────── -->
+  <div class="rl__column-picker" *ngIf="columnPickerOpen">
+    <span class="rl__column-picker-title">Visible columns</span>
+    <label
+      *ngFor="let col of columns"
+      class="rl__column-picker-item"
+    >
+      <input type="checkbox" [(ngModel)]="col.visible" />
+      <span class="rl__column-picker-name">{{ col.name }}</span>
+      <span class="rl__type-badge" [attr.data-type]="col.type">{{ col.type }}</span>
+    </label>
+  </div>
 
-      <div class="rl__sidebar-empty" *ngIf="!records.length">
-        <mat-icon>folder_open</mat-icon>
-        <span>No records yet</span>
-        <button class="rl__btn rl__btn--small rl__btn--terracotta" [routerLink]="'new'">
-          Create one
-        </button>
-      </div>
+  <!-- ─── Table ───────────────────────────────────────────────── -->
+  <div class="rl__table-wrap">
+    <table class="rl__table" *ngIf="records.length">
+      <thead>
+        <tr>
+          <th class="rl__th rl__th--name">Name</th>
+          <th class="rl__th" *ngFor="let col of visibleColumns">{{ col.name }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr
+          *ngFor="let record of paginatedRecords"
+          class="rl__row"
+          [routerLink]="['record', record.id]"
+          routerLinkActive="rl__row--active"
+        >
+          <td class="rl__cell rl__cell--name">{{ record.name }}</td>
+          <td
+            *ngFor="let col of visibleColumns"
+            class="rl__cell"
+            [attr.data-type]="col.type"
+          >
+            {{ getDisplayValue(record, col.propertyId) }}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- ─── Empty State ────────────────────────────────────────── -->
+    <div class="rl__empty" *ngIf="!records.length">
+      <mat-icon>folder_open</mat-icon>
+      <p class="rl__empty-title">No records yet</p>
+      <p class="rl__empty-desc">Create a record to start organizing your data</p>
+      <button class="rl__btn rl__btn--terracotta" [routerLink]="'new'">
+        <mat-icon>add</mat-icon>
+        Create one
+      </button>
     </div>
-  </aside>
+  </div>
 
-  <!-- ─── Main Content ────────────────────────────────────────── -->
-  <main class="rl__content">
+  <!-- ─── Pagination ──────────────────────────────────────────── -->
+  <div class="rl__pagination" *ngIf="records.length">
+    <div class="rl__pagination-info">
+      <span>{{ startIndex }}–{{ endIndex }} of {{ records.length }}</span>
+    </div>
+
+    <div class="rl__pagination-controls">
+      <button
+        class="rl__page-btn"
+        (click)="goToPage(1)"
+        [disabled]="currentPage === 1"
+        matTooltip="First page"
+      >
+        <mat-icon>first_page</mat-icon>
+      </button>
+      <button
+        class="rl__page-btn"
+        (click)="goToPage(currentPage - 1)"
+        [disabled]="currentPage === 1"
+        matTooltip="Previous page"
+      >
+        <mat-icon>chevron_left</mat-icon>
+      </button>
+
+      <span class="rl__page-indicator">{{ currentPage }} / {{ totalPages }}</span>
+
+      <button
+        class="rl__page-btn"
+        (click)="goToPage(currentPage + 1)"
+        [disabled]="currentPage === totalPages"
+        matTooltip="Next page"
+      >
+        <mat-icon>chevron_right</mat-icon>
+      </button>
+      <button
+        class="rl__page-btn"
+        (click)="goToPage(totalPages)"
+        [disabled]="currentPage === totalPages"
+        matTooltip="Last page"
+      >
+        <mat-icon>last_page</mat-icon>
+      </button>
+    </div>
+
+    <div class="rl__pagination-size">
+      <span>Rows:</span>
+      <select
+        [ngModel]="pageSize"
+        (ngModelChange)="onPageSizeChange($event)"
+      >
+        <option *ngFor="let size of pageSizeOptions" [ngValue]="size">{{ size }}</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- ─── Detail View ─────────────────────────────────────────── -->
+  <main class="rl__detail">
     <router-outlet />
   </main>
 </div>

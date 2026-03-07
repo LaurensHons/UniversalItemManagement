@@ -34,6 +34,10 @@ namespace UniversalItemManagement.EF
             services.AddTransient<IEntityRepository<FieldProperty>, FieldPropertyRepository>();
             services.AddTransient<IEntityRepository<Field>, FieldRepository>();
             services.AddTransient<IEntityRepository<FieldValue>, FieldValueRepository>();
+            services.AddTransient<IEntityRepository<ItemList>, ItemListRepository>();
+            services.AddTransient<IEntityRepository<ListColumn>, EntityRepository<ListColumn>>();
+            services.AddTransient<IEntityRepository<ListItem>, ListItemRepository>();
+            services.AddTransient<IEntityRepository<ListItemValue>, EntityRepository<ListItemValue>>();
 
             return services;
         }

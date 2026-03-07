@@ -16,6 +16,12 @@ import {
 } from './fields/field-property.state';
 import { FieldFeatureKey, FieldReducer, FieldState, FieldEntityEffects } from './fields/field.state';
 import { FieldValueFeatureKey, FieldValueReducer, FieldValueState, FieldValueEntityEffects } from './fields/field-value.state';
+import {
+  ItemListFeatureKey,
+  ItemListState,
+  ItemListReducer,
+  ItemListEntityEffects,
+} from './item-list/item-list.state';
 
 export const featureKey = 'coreFeature';
 
@@ -24,6 +30,7 @@ export interface CoreState {
   [FieldFeatureKey]: FieldState;
   [FieldPropertyFeatureKey]: FieldPropertyState;
   [FieldValueFeatureKey]: FieldValueState;
+  [ItemListFeatureKey]: ItemListState;
 }
 
 export const reducers = new InjectionToken<ActionReducerMap<CoreState>>(
@@ -34,11 +41,12 @@ export const reducers = new InjectionToken<ActionReducerMap<CoreState>>(
       [FieldFeatureKey]: FieldReducer,
       [FieldPropertyFeatureKey]: FieldPropertyReducer,
       [FieldValueFeatureKey]: FieldValueReducer,
+      [ItemListFeatureKey]: ItemListReducer,
     }),
   }
 );
 
-export const effects = [RecordEntityEffects, FieldEntityEffects, FieldPropertyEntityEffects, FieldValueEntityEffects];
+export const effects = [RecordEntityEffects, FieldEntityEffects, FieldPropertyEntityEffects, FieldValueEntityEffects, ItemListEntityEffects];
 
 export interface CoreFeature {
   [featureKey]: CoreState;

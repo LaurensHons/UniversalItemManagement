@@ -139,6 +139,22 @@ Each component gets a short prefix:
 - Facades use `providedIn: 'root'`
 - CRUD: `addEntity()`, `updateEntity()`, `removeEntity()`, `getEntity()`, `getEntities()`
 
+### Data Access Rule
+
+**IMPORTANT: Never inject or call facades directly from components.**
+
+Components must always go through a dedicated service layer. Facades are an implementation detail of state management and should not be referenced in component code.
+
+```typescript
+// ✅ CORRECT — component uses a service
+constructor(private recordService: RecordService) {}
+
+// ❌ WRONG — component uses a facade directly
+constructor(private recordFacade: RecordFacade) {}
+```
+
+Services encapsulate the facade calls and any additional business logic (mapping, orchestration, error handling). This keeps components thin and makes testing easier.
+
 ## Testing
 
 - Framework: Jasmine/Karma with ChromeHeadless

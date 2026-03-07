@@ -1,8 +1,5 @@
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using UniversalItemManagement.EF.Domain.Infrastructure;
 using UniversalItemManagement.EF.Domain.Models.Entities.Fields;
 
@@ -12,6 +9,16 @@ namespace UniversalItemManagement.EF.Domain.Services.Repositories
     {
         public FieldPropertyRepository(Context context) : base(context)
         {
+        }
+
+        protected override IQueryable<FieldProperty> IncludeNavigationProperties(IQueryable<FieldProperty> query)
+        {
+            return query
+                .Include(fp => fp.ItemList)
+                    .ThenInclude(il => il!.Columns.OrderBy(c => c.Order))
+                .Include(fp => fp.ItemList)
+                    .ThenInclude(il => il!.Items.OrderBy(i => i.Order))
+                        .ThenInclude(i => i.Values);
         }
     }
 }
