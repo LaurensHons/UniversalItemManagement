@@ -41,7 +41,7 @@ jobs:
                 - apps
               labels:
                 - "traefik.enable=true"
-                - "traefik.http.routers.${APP_NAME}.rule=PathPrefix(\`/${APP_NAME}\`)"
+                - "traefik.http.routers.${APP_NAME}.rule=Host('${APP_NAME}.laurenshons.com')"
                 - "traefik.http.routers.${APP_NAME}.entrypoints=web"
                 - "traefik.http.middlewares.${APP_NAME}-strip.stripprefix.prefixes=/${APP_NAME}"
                 - "traefik.http.routers.${APP_NAME}.middlewares=${APP_NAME}-strip"
