@@ -12,15 +12,21 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Deploy to server
+      - uses: actions/checkout@v4
+
+      - name: Log in to Gitea Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ secrets.MY_GITEA_URL }}
+          username: ${{ secrets.MY_GITEA_USER }}
+          password: ${{ secrets.MY_GITEA_TOKEN }}
+
+      - name: Deploy
         run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.DEPLOY_SSH_KEY }}" > ~/.ssh/id_ed25519
-          chmod 600 ~/.ssh/id_ed25519
-          ssh-keyscan -H ${{ secrets.DEPLOY_HOST }} >> ~/.ssh/known_hosts
-          ssh ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} << EOF
-            cd ${{ secrets.DEPLOY_PATH }}
-            export IMAGE_TAG=${{ github.event.inputs.tag }}
-            docker compose pull
-            docker compose up -d
-          EOF
+          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" > .env
+          echo "GITEA_URL=${{ secrets.MY_GITEA_URL }}" >> .env
+          echo "GITEA_OWNER=${{ gitea.repository_owner }}" >> .env
+          echo "GITEA_REPO=${{ gitea.event.repository.name }}" >> .env
+          echo "IMAGE_TAG=${{ gitea.event.inputs.tag }}" >> .env
+          docker compose pull
+          docker compose up -d

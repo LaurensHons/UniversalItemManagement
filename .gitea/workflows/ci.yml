@@ -28,7 +28,7 @@ jobs:
 
   build-image:
     needs: build-and-test
-    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    if: gitea.event_name == 'push' && gitea.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -36,14 +36,14 @@ jobs:
       - name: Log in to Gitea Container Registry
         uses: docker/login-action@v3
         with:
-          registry: ${{ secrets.GITEA_URL }}
-          username: ${{ secrets.GITEA_USER }}
-          password: ${{ secrets.GITEA_TOKEN }}
+          registry: ${{ secrets.MY_GITEA_URL }}
+          username: ${{ secrets.MY_GITEA_USER }}
+          password: ${{ secrets.MY_GITEA_TOKEN }}
 
       - name: Build and push Docker image
         run: |
-          IMAGE=${{ secrets.GITEA_URL }}/${{ github.repository }}
+          IMAGE=${{ secrets.MY_GITEA_URL }}/${{ gitea.repository }}
           IMAGE=$(echo "$IMAGE" | tr '[:upper:]' '[:lower:]')
-          docker build -t $IMAGE:latest -t $IMAGE:${{ github.sha }} .
+          docker build -t $IMAGE:latest -t $IMAGE:${{ gitea.sha }} .
           docker push $IMAGE:latest
-          docker push $IMAGE:${{ github.sha }}
+          docker push $IMAGE:${{ gitea.sha }}
