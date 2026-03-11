@@ -32,9 +32,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
+      
       - name: Log in to Gitea Container Registry
-        run: docker login ${{ secrets.MY_GITEA_URL }} -u ${{ secrets.MY_GITEA_USER }} -p ${{ secrets.MY_GITEA_TOKEN }}
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ secrets.MY_GITEA_URL }}
+          username: ${{ secrets.MY_GITEA_USER }}
+          password: ${{ secrets.MY_GITEA_TOKEN }}
 
       - name: Build and push Docker image
         run: |
