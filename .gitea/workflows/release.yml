@@ -15,14 +15,14 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Log in to Gitea Container Registry
-        run: docker login ${{ secrets.MY_GITEA_URL }} -u ${{ secrets.MY_GITEA_USER }} -p ${{ secrets.MY_GITEA_TOKEN }}
+        run: docker login ${{ vars.MY_GITEA_URL }} -u ${{ secrets.MY_GITEA_USER }} -p ${{ secrets.MY_GITEA_TOKEN }}
 
       - name: Deploy
         run: |
           APP_NAME=$(echo "${{ gitea.event.repository.name }}" | tr '[:upper:]' '[:lower:]' | tr ' _' '--')
 
           echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" > .env
-          echo "GITEA_URL=${{ secrets.MY_GITEA_URL }}" >> .env
+          echo "GITEA_URL=${{ vars.MY_GITEA_URL }}" >> .env
           echo "GITEA_OWNER=${{ gitea.repository_owner }}" >> .env
           echo "GITEA_REPO=${{ gitea.event.repository.name }}" >> .env
           echo "IMAGE_TAG=${{ gitea.event.inputs.tag }}" >> .env
