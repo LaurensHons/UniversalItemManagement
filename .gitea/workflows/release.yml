@@ -26,25 +26,8 @@ jobs:
           echo "GITEA_OWNER=${{ gitea.repository_owner }}" >> .env
           echo "GITEA_REPO=${{ gitea.event.repository.name }}" >> .env
           echo "IMAGE_TAG=${{ gitea.event.inputs.tag }}" >> .env
+          echo "APP_NAME=${APP_NAME}" >> .env
 
           docker network create apps 2>/dev/null || true
-
-          SVC=$(docker compose config --services | head -n1)
-          cat > docker-compose.traefik.yml <<TRAEFIKEOF
-          services:
-            ${SVC}:
-              networks:
-                - apps
-              labels:
-                - "traefik.enable=true"
-                - "traefik.http.routers.${APP_NAME}.rule=Host('app.laurenshons.com/${APP_NAME}')"
-                - "traefik.http.routers.${APP_NAME}.entrypoints=web"
-                - "traefik.http.middlewares.${APP_NAME}-strip.stripprefix.prefixes=/${APP_NAME}"
-                - "traefik.http.routers.${APP_NAME}.middlewares=${APP_NAME}-strip"
-          networks:
-            apps:
-              external: true
-          TRAEFIKEOF
-
-          docker compose -f docker-compose.yml -f docker-compose.traefik.yml pull
-          docker compose -f docker-compose.yml -f docker-compose.traefik.yml up -d
+          docker compose pull
+          docker compose up -d

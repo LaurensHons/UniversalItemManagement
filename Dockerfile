@@ -2,7 +2,7 @@
 FROM node:20-alpine AS client-build
 WORKDIR /client
 COPY universalitemmanagement.client/package*.json ./
-RUN npm ci
+RUN npm ci --maxsockets=5 --retry 3
 COPY universalitemmanagement.client/ .
 RUN npm run build -- --configuration production
 
