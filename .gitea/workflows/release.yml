@@ -23,8 +23,8 @@ jobs:
 
           echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" > .env
           echo "GITEA_URL=${{ vars.MY_GITEA_URL }}" >> .env
-          echo "GITEA_OWNER=${{ gitea.repository_owner }}" >> .env
-          echo "GITEA_REPO=${{ gitea.event.repository.name }}" >> .env
+          echo "GITEA_OWNER=$(echo '${{ gitea.repository_owner }}' | tr '[:upper:]' '[:lower:]')" >> .env
+          echo "GITEA_REPO=$(echo '${{ gitea.event.repository.name }}' | tr '[:upper:]' '[:lower:]')" >> .env
           echo "IMAGE_TAG=${{ gitea.event.inputs.tag }}" >> .env
           echo "APP_NAME=${APP_NAME}" >> .env
 
