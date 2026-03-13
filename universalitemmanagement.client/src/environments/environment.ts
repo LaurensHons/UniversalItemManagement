@@ -1,5 +1,5 @@
 export const environment = {
   production: true,
-  apiUrl: '/api',
-  hubUrl: '/Hub',
+  apiUrl: '/universalitemmanagement/api',
+  hubUrl: '/universalitemmanagement/Hub',
 };

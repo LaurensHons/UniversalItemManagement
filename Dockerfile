@@ -4,7 +4,7 @@ WORKDIR /client
 COPY universalitemmanagement.client/package*.json ./
 RUN npm ci --maxsockets=5 --retry 3
 COPY universalitemmanagement.client/ .
-RUN npm run build -- --configuration production
+RUN npm run build -- --configuration production --base-href /universalitemmanagement/
 
 # .NET build stage
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
