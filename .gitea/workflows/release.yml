@@ -35,7 +35,7 @@ jobs:
         run: |
           docker compose up -d db
           docker compose up --wait db
-          docker compose run --rm app ./efbundle --connection "Host=db;Port=5432;Database=uim;Username=uim;Password=${{ secrets.DB_PASSWORD }}"
+          docker compose run --rm --entrypoint ./efbundle app --connection "Host=db;Port=5432;Database=uim;Username=uim;Password=${{ secrets.DB_PASSWORD }}"
 
       - name: Start application
         run: docker compose up -d
