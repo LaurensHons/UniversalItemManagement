@@ -16,7 +16,10 @@
       "mcp__chrome-devtools__drag",
       "mcp__chrome-devtools__get_console_message",
       "mcp__chrome-devtools__list_network_requests",
-      "mcp__chrome-devtools__get_network_request"
+      "mcp__chrome-devtools__get_network_request",
+      "Bash(xargs grep:*)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:4200)",
+      "mcp__plugin_cloudflare_cloudflare-api__search"
     ]
   }
 }

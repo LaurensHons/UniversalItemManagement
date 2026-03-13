@@ -26,6 +26,14 @@ RUN dotnet build "UniversalItemManagement.Server.csproj" -c Release -o /app/buil
 FROM build AS publish
 RUN dotnet publish "UniversalItemManagement.Server.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
+# Build EF migration bundle
+RUN dotnet tool install --global dotnet-ef
+ENV PATH="$PATH:/root/.dotnet/tools"
+WORKDIR /src
+RUN dotnet ef migrations bundle -o /app/efbundle --force \
+    --project UniversalItemManagement.EF/UniversalItemManagement.EF.csproj \
+    --startup-project UniversalItemManagement.Server/UniversalItemManagement.Server.csproj
+
 # Runtime stage
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
 WORKDIR /app
@@ -33,6 +41,7 @@ EXPOSE 8080
 
 # Copy published .NET files
 COPY --from=publish /app/publish .
+COPY --from=publish /app/efbundle ./efbundle
 
 # Copy Angular build output into wwwroot
 COPY --from=client-build /client/dist/universalitemmanagement.client ./wwwroot
