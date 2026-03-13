@@ -30,4 +30,12 @@ jobs:
 
           docker network create apps 2>/dev/null || true
           docker compose pull
-          docker compose up -d
+
+      - name: Run database migrations
+        run: |
+          docker compose up -d db
+          docker compose up --wait db
+          docker compose run --rm app ./efbundle --connection "Host=db;Port=5432;Database=uim;Username=uim;Password=${{ secrets.DB_PASSWORD }}"
+
+      - name: Start application
+        run: docker compose up -d
